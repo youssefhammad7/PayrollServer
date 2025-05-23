@@ -13,16 +13,9 @@ namespace PayrollServer.Infrastructure.Services.Email
         string ReplaceTemplateParameters(string template, object model);
     }
 
-    public class EmailTemplateService : IEmailTemplateService
+    public class EmailTemplateService(IConfiguration configuration) : IEmailTemplateService
     {
-        private readonly IConfiguration _configuration;
-        private readonly Dictionary<string, string> _templateCache;
-
-        public EmailTemplateService(IConfiguration configuration)
-        {
-            _configuration = configuration;
-            _templateCache = new Dictionary<string, string>();
-        }
+        private readonly Dictionary<string, string> _templateCache = new();
 
         public async Task<string> GetTemplateContentAsync(string templateName)
         {
@@ -33,8 +26,10 @@ namespace PayrollServer.Infrastructure.Services.Email
             }
 
             // Get template path from configuration or use default
-            var templatePath = _configuration["EmailSettings:TemplatesPath"] 
-                ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Emails");
+            string? templatePathFromConfig = configuration["EmailSettings:TemplatesPath"];
+            var templatePath = templatePathFromConfig != null
+                ? templatePathFromConfig
+                : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Emails");
 
             var templateFile = Path.Combine(templatePath, $"{templateName}.html");
 
@@ -72,58 +67,51 @@ namespace PayrollServer.Infrastructure.Services.Email
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = $"PayrollServer.Infrastructure.Templates.Emails.{templateName}.html";
 
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream == null)
             {
-                if (stream == null)
-                {
-                    // If template not found, return a basic template
-                    return GetBasicTemplate(templateName);
-                }
-
-                using (var reader = new StreamReader(stream))
-                {
-                    string templateContent = await reader.ReadToEndAsync();
-                    _templateCache[templateName] = templateContent;
-                    return templateContent;
-                }
+                // If template not found, return a basic template
+                return GetBasicTemplate(templateName);
             }
+
+            using var reader = new StreamReader(stream);
+            string templateContent = await reader.ReadToEndAsync();
+            _templateCache[templateName] = templateContent;
+            return templateContent;
         }
 
-        private string GetBasicTemplate(string templateName)
+        private static string GetBasicTemplate(string templateName)
         {
             // Provide a basic fallback template
-            switch (templateName.ToLower())
+            return templateName.ToLower() switch
             {
-                case "confirmation":
-                    return @"
-                        <html>
-                        <body>
-                            <h1>Welcome to PayrollServer!</h1>
-                            <p>Thank you for registering. Please confirm your email by clicking the link below:</p>
-                            <p><a href=""{{ConfirmationLink}}"">Confirm Email</a></p>
-                        </body>
-                        </html>";
+                "confirmation" => @"
+                    <html>
+                    <body>
+                        <h1>Welcome to PayrollServer!</h1>
+                        <p>Thank you for registering. Please confirm your email by clicking the link below:</p>
+                        <p><a href=""{{ConfirmationLink}}"">Confirm Email</a></p>
+                    </body>
+                    </html>",
 
-                case "passwordreset":
-                    return @"
-                        <html>
-                        <body>
-                            <h1>Reset Your Password</h1>
-                            <p>You have requested to reset your password. Please click the link below to proceed:</p>
-                            <p><a href=""{{ResetLink}}"">Reset Password</a></p>
-                            <p>If you didn't request a password reset, please ignore this email.</p>
-                        </body>
-                        </html>";
+                "passwordreset" => @"
+                    <html>
+                    <body>
+                        <h1>Reset Your Password</h1>
+                        <p>You have requested to reset your password. Please click the link below to proceed:</p>
+                        <p><a href=""{{ResetLink}}"">Reset Password</a></p>
+                        <p>If you didn't request a password reset, please ignore this email.</p>
+                    </body>
+                    </html>",
 
-                default:
-                    return @"
-                        <html>
-                        <body>
-                            <h1>{{Subject}}</h1>
-                            <p>{{Message}}</p>
-                        </body>
-                        </html>";
-            }
+                _ => @"
+                    <html>
+                    <body>
+                        <h1>{{Subject}}</h1>
+                        <p>{{Message}}</p>
+                    </body>
+                    </html>"
+            };
         }
     }
 } 

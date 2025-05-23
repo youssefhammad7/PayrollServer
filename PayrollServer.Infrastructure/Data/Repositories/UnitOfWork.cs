@@ -27,7 +27,10 @@ namespace PayrollServer.Infrastructure.Data.Repositories
             {
                 var repositoryType = typeof(Repository<>);
                 var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(type), _context);
-                _repositories.Add(type, repositoryInstance);
+                if (repositoryInstance != null)
+                {
+                    _repositories.Add(type, repositoryInstance);
+                }
             }
 
             return (IRepository<TEntity>)_repositories[type];

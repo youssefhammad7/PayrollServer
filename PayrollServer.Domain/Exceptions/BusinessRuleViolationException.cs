@@ -6,10 +6,12 @@ namespace PayrollServer.Domain.Exceptions
     {
         public BusinessRuleViolationException(string message) : base(message)
         {
+            RuleName = string.Empty;
         }
 
         public BusinessRuleViolationException(string message, Exception innerException) : base(message, innerException)
         {
+            RuleName = string.Empty;
         }
 
         public BusinessRuleViolationException(string ruleName, string message)

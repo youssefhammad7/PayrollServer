@@ -73,6 +73,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Global exception handling middleware
+app.UseExceptionHandling();
+
 app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();

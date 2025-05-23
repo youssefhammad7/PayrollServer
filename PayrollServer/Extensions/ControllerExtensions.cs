@@ -12,19 +12,19 @@ namespace PayrollServer.Extensions
             return controller.StatusCode(response.StatusCode, response);
         }
 
-        public static ActionResult ApiOk<T>(this ControllerBase controller, T data, string message = null)
+        public static ActionResult ApiOk<T>(this ControllerBase controller, T data, string? message = null)
         {
             var response = ApiResponse<T>.Success(data, message);
             return controller.StatusCode(response.StatusCode, response);
         }
 
-        public static ActionResult ApiOk(this ControllerBase controller, string message = null)
+        public static ActionResult ApiOk(this ControllerBase controller, string? message = null)
         {
             var response = ApiResponse.Success(message);
             return controller.StatusCode(response.StatusCode, response);
         }
 
-        public static ActionResult ApiCreated<T>(this ControllerBase controller, T data, string message = null)
+        public static ActionResult ApiCreated<T>(this ControllerBase controller, T data, string? message = null)
         {
             var response = ApiResponse<T>.Success(data, message, 201);
             return controller.StatusCode(response.StatusCode, response);

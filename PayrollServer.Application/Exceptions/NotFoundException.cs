@@ -6,6 +6,8 @@ namespace PayrollServer.Application.Exceptions
     {
         public NotFoundException(string message) : base(message)
         {
+            Name = string.Empty;
+            Key = string.Empty;
         }
 
         public NotFoundException(string name, object key)

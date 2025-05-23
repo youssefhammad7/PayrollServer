@@ -1,30 +1,30 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.25" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.25">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.25" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.25">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Middleware\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="Filters\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Middleware\" />
+		<Folder Include="Extensions\" />
+		<Folder Include="Filters\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\PayrollServer.Application\PayrollServer.Application.csproj" />
-    <ProjectReference Include="..\PayrollServer.Common\PayrollServer.Common.csproj" />
-    <ProjectReference Include="..\PayrollServer.Infrastructure\PayrollServer.Infrastructure.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\PayrollServer.Application\PayrollServer.Application.csproj" />
+		<ProjectReference Include="..\PayrollServer.Common\PayrollServer.Common.csproj" />
+		<ProjectReference Include="..\PayrollServer.Infrastructure\PayrollServer.Infrastructure.csproj" />
+	</ItemGroup>
 
 </Project>

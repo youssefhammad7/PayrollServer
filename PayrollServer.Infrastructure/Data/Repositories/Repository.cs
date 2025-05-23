@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PayrollServer.Domain.Entities;
+using PayrollServer.Domain.Exceptions;
 using PayrollServer.Domain.Interfaces.Repositories;
 using PayrollServer.Infrastructure.Data.Context;
 using System;
@@ -23,12 +24,14 @@ namespace PayrollServer.Infrastructure.Data.Repositories
 
         public virtual T GetById(Guid id)
         {
-            return _dbSet.Find(id);
+            var entity = _dbSet.Find(id);
+            return entity ?? throw new EntityNotFoundException(typeof(T).Name, id);
         }
 
         public virtual async Task<T> GetByIdAsync(Guid id)
         {
-            return await _dbSet.FindAsync(id);
+            var entity = await _dbSet.FindAsync(id);
+            return entity ?? throw new EntityNotFoundException(typeof(T).Name, id);
         }
 
         public virtual IEnumerable<T> GetAll()
@@ -53,12 +56,14 @@ namespace PayrollServer.Infrastructure.Data.Repositories
 
         public virtual T GetFirstOrDefault(Expression<Func<T, bool>> predicate)
         {
-            return _dbSet.FirstOrDefault(predicate);
+            var entity = _dbSet.FirstOrDefault(predicate);
+            return entity ?? throw new EntityNotFoundException(typeof(T).Name, "matching criteria");
         }
 
         public virtual async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
         {
-            return await _dbSet.FirstOrDefaultAsync(predicate);
+            var entity = await _dbSet.FirstOrDefaultAsync(predicate);
+            return entity ?? throw new EntityNotFoundException(typeof(T).Name, "matching criteria");
         }
 
         public virtual void Add(T entity)

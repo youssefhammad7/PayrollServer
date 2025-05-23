@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PayrollServer.Domain.Entities;
@@ -94,11 +95,11 @@ namespace PayrollServer.Infrastructure.Data.Context
             // Customize the ASP.NET Identity model and override the defaults
             modelBuilder.Entity<ApplicationUser>().ToTable("Users");
             modelBuilder.Entity<ApplicationRole>().ToTable("Roles");
-            modelBuilder.Entity<Microsoft.AspNetCore.Identity.IdentityUserClaim<string>>().ToTable("UserClaims");
-            modelBuilder.Entity<Microsoft.AspNetCore.Identity.IdentityUserRole<string>>().ToTable("UserRoles");
-            modelBuilder.Entity<Microsoft.AspNetCore.Identity.IdentityUserLogin<string>>().ToTable("UserLogins");
-            modelBuilder.Entity<Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>>().ToTable("RoleClaims");
-            modelBuilder.Entity<Microsoft.AspNetCore.Identity.IdentityUserToken<string>>().ToTable("UserTokens");
+            modelBuilder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims");
+            modelBuilder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
+            modelBuilder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins");
+            modelBuilder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
+            modelBuilder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");
 
             // Apply all configurations
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);

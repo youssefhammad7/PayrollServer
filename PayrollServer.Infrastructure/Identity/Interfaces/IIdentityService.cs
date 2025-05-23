@@ -10,8 +10,8 @@ namespace PayrollServer.Infrastructure.Identity.Interfaces
         Task<(bool isSuccessful, string userId, string token)> LoginAsync(string email, string password);
         Task<bool> IsInRoleAsync(string userId, string role);
         Task<bool> AuthorizeAsync(string userId, string policyName);
-        Task<ApplicationUser> GetUserByIdAsync(string userId);
-        Task<ApplicationUser> GetUserByEmailAsync(string email);
+        Task<ApplicationUser?> GetUserByIdAsync(string userId);
+        Task<ApplicationUser?> GetUserByEmailAsync(string email);
         Task<IList<string>> GetUserRolesAsync(string userId);
         //Task<bool> AddToRoleAsync(string userId, string role);
         Task<bool> RemoveFromRoleAsync(string userId, string role);

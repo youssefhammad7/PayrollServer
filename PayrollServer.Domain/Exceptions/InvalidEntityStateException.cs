@@ -7,10 +7,16 @@ namespace PayrollServer.Domain.Exceptions
     {
         public InvalidEntityStateException(string message) : base(message)
         {
+            EntityName = string.Empty;
+            EntityId = string.Empty;
+            Errors = Array.Empty<string>();
         }
 
         public InvalidEntityStateException(string message, Exception innerException) : base(message, innerException)
         {
+            EntityName = string.Empty;
+            EntityId = string.Empty;
+            Errors = Array.Empty<string>();
         }
 
         public InvalidEntityStateException(string entityName, object entityId)
@@ -18,6 +24,7 @@ namespace PayrollServer.Domain.Exceptions
         {
             EntityName = entityName;
             EntityId = entityId;
+            Errors = Array.Empty<string>();
         }
 
         public InvalidEntityStateException(string entityName, object entityId, IEnumerable<string> errors)

@@ -7,22 +7,11 @@ using System.Threading.Tasks;
 
 namespace PayrollServer.Infrastructure.Services.Email
 {
-    public class SmtpEmailService : IEmailService
+    public class SmtpEmailService(
+        IConfiguration configuration,
+        IEmailTemplateService templateService,
+        ILogger<SmtpEmailService> logger) : IEmailService
     {
-        private readonly IConfiguration _configuration;
-        private readonly IEmailTemplateService _templateService;
-        private readonly ILogger<SmtpEmailService> _logger;
-
-        public SmtpEmailService(
-            IConfiguration configuration,
-            IEmailTemplateService templateService,
-            ILogger<SmtpEmailService> logger)
-        {
-            _configuration = configuration;
-            _templateService = templateService;
-            _logger = logger;
-        }
-
         public async Task SendEmailAsync(EmailMessage emailMessage)
         {
             try
@@ -32,24 +21,24 @@ namespace PayrollServer.Infrastructure.Services.Email
                 {
                     await smtpClient.SendMailAsync(mailMessage);
                 }
-                _logger.LogInformation("Email sent successfully to {RecipientEmail}", emailMessage.To);
+                logger.LogInformation("Email sent successfully to {RecipientEmail}", emailMessage.To);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to send email to {RecipientEmail}", emailMessage.To);
+                logger.LogError(ex, "Failed to send email to {RecipientEmail}", emailMessage.To);
                 throw;
             }
         }
 
-        public async Task SendTemplatedEmailAsync(string to, string templateName, object model, string subject = null)
+        public async Task SendTemplatedEmailAsync(string to, string templateName, object model, string? subject = null)
         {
             try
             {
                 // Get template content
-                var templateContent = await _templateService.GetTemplateContentAsync(templateName);
+                var templateContent = await templateService.GetTemplateContentAsync(templateName);
                 
                 // Replace parameters in template
-                var emailBody = _templateService.ReplaceTemplateParameters(templateContent, model);
+                var emailBody = templateService.ReplaceTemplateParameters(templateContent, model);
 
                 // Create and send email
                 var emailMessage = new EmailMessage
@@ -64,14 +53,14 @@ namespace PayrollServer.Infrastructure.Services.Email
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to send templated email to {RecipientEmail}", to);
+                logger.LogError(ex, "Failed to send templated email to {RecipientEmail}", to);
                 throw;
             }
         }
 
         private MailMessage CreateMailMessage(EmailMessage emailMessage)
         {
-            var from = emailMessage.From ?? _configuration["EmailSettings:DefaultFromEmail"] 
+            var from = emailMessage.From ?? configuration["EmailSettings:DefaultFromEmail"] 
                 ?? "no-reply@payrollserver.com";
             
             var mail = new MailMessage
@@ -100,11 +89,11 @@ namespace PayrollServer.Infrastructure.Services.Email
 
         private SmtpClient CreateSmtpClient()
         {
-            var host = _configuration["EmailSettings:SmtpHost"] ?? "localhost";
-            var port = int.Parse(_configuration["EmailSettings:SmtpPort"] ?? "25");
-            var username = _configuration["EmailSettings:SmtpUsername"];
-            var password = _configuration["EmailSettings:SmtpPassword"];
-            var enableSsl = bool.Parse(_configuration["EmailSettings:EnableSsl"] ?? "true");
+            var host = configuration["EmailSettings:SmtpHost"] ?? "localhost";
+            var port = int.Parse(configuration["EmailSettings:SmtpPort"] ?? "25");
+            var username = configuration["EmailSettings:SmtpUsername"];
+            var password = configuration["EmailSettings:SmtpPassword"];
+            var enableSsl = bool.Parse(configuration["EmailSettings:EnableSsl"] ?? "true");
 
             var smtpClient = new SmtpClient(host, port)
             {
@@ -121,7 +110,7 @@ namespace PayrollServer.Infrastructure.Services.Email
             return smtpClient;
         }
 
-        private string GetDefaultSubject(string templateName)
+        private static string GetDefaultSubject(string templateName)
         {
             return templateName.ToLower() switch
             {

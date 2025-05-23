@@ -2,6 +2,6 @@ namespace PayrollServer.Application.DTOs.Request
 {
     public class ForgotPasswordRequest
     {
-        public string Email { get; set; }
+        public required string Email { get; set; }
     }
 } 

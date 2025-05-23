@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
-namespace PayrollServer.Models
+namespace PayrollServer.Common.Models
 {
     public class ApiResponse<T>
     {
@@ -111,4 +111,4 @@ namespace PayrollServer.Models
             };
         }
     }
-}
+} 
