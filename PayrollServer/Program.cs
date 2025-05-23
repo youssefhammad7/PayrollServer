@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using PayrollServer.Application.Extensions;
+using PayrollServer.Infrastructure.Data.Seeds;
 using PayrollServer.Infrastructure.Extensions;
 using PayrollServer.Infrastructure.Logging;
 using Serilog;
@@ -90,8 +91,11 @@ app.MapControllers();
 
 try
 {
+    // Initialize database and seed data
+    await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
+    
     Log.Information("Starting PayrollServer API");
-    app.Run();
+    await app.RunAsync();
 }
 catch (Exception ex)
 {

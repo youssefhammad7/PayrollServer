@@ -1,4 +1,6 @@
 using AutoMapper;
+using PayrollServer.Application.DTOs.Response;
+using PayrollServer.Domain.Entities;
 
 namespace PayrollServer.Application.Mappings
 {
@@ -6,8 +8,12 @@ namespace PayrollServer.Application.Mappings
     {
         public MappingProfile()
         {
-            // Register your mappings here
-            // Example: CreateMap<SourceType, DestinationType>();
+            // User mappings
+            CreateMap<ApplicationUser, UserDto>()
+                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.UserName));
+
+            // Role mappings
+            CreateMap<ApplicationRole, RoleDto>();
         }
     }
 } 
