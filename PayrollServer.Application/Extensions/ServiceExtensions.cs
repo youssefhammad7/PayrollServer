@@ -12,6 +12,8 @@ using PayrollServer.Application.Features.JobGrade.Requests;
 using PayrollServer.Application.Features.JobGrade.Validators;
 using PayrollServer.Application.Features.SalaryRecord.Requests;
 using PayrollServer.Application.Features.SalaryRecord.Validators;
+using PayrollServer.Application.Features.ServiceBracket.Requests;
+using PayrollServer.Application.Features.ServiceBracket.Validators;
 using PayrollServer.Application.Interfaces.Services;
 using PayrollServer.Application.Services;
 using PayrollServer.Application.Validators;
@@ -39,6 +41,7 @@ namespace PayrollServer.Application.Extensions
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<ISalaryRecordService, SalaryRecordService>();
             services.AddScoped<IIncentiveService, IncentiveService>();
+            services.AddScoped<IServiceBracketService, ServiceBracketService>();
 
             // Register specific validators
             // TODO: Uncomment these once the validators are implemented
@@ -68,6 +71,10 @@ namespace PayrollServer.Application.Extensions
             // Incentive validators
             services.AddScoped<IValidator<CreateIncentiveRequest>, CreateIncentiveValidator>();
             services.AddScoped<IValidator<UpdateIncentiveRequest>, UpdateIncentiveValidator>();
+            
+            // ServiceBracket validators
+            services.AddScoped<IValidator<CreateServiceBracketRequest>, CreateServiceBracketValidator>();
+            services.AddScoped<UpdateServiceBracketValidator>();
 
             return services;
         }

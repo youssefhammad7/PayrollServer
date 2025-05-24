@@ -24,6 +24,7 @@ namespace PayrollServer.Infrastructure.Data.Context
         public DbSet<Employee> Employees { get; set; }
         public DbSet<SalaryRecord> SalaryRecords { get; set; }
         public DbSet<Incentive> Incentives { get; set; }
+        public DbSet<ServiceBracket> ServiceBrackets { get; set; }
         public DbSet<AbsenceRecord> AbsenceRecords { get; set; }
 
         public override int SaveChanges()

@@ -20,6 +20,7 @@ namespace PayrollServer.Infrastructure.Data.Repositories
         private readonly IEmployeeRepository _employeesRepository;
         private readonly ISalaryRecordRepository _salaryRecordsRepository;
         private readonly IIncentiveRepository _incentivesRepository;
+        private readonly IServiceBracketRepository _serviceBracketsRepository;
 
         public UnitOfWork(
             ApplicationDbContext context,
@@ -27,7 +28,8 @@ namespace PayrollServer.Infrastructure.Data.Repositories
             IJobGradeRepository jobGradeRepository,
             IEmployeeRepository employeeRepository,
             ISalaryRecordRepository salaryRecordRepository,
-            IIncentiveRepository incentiveRepository)
+            IIncentiveRepository incentiveRepository,
+            IServiceBracketRepository serviceBracketRepository)
         {
             _context = context;
             _repositories = new Dictionary<Type, object>();
@@ -36,6 +38,7 @@ namespace PayrollServer.Infrastructure.Data.Repositories
             _employeesRepository = employeeRepository;
             _salaryRecordsRepository = salaryRecordRepository;
             _incentivesRepository = incentiveRepository;
+            _serviceBracketsRepository = serviceBracketRepository;
         }
 
         public IDepartmentRepository Departments => _departmentsRepository;
@@ -47,6 +50,8 @@ namespace PayrollServer.Infrastructure.Data.Repositories
         public ISalaryRecordRepository SalaryRecords => _salaryRecordsRepository;
         
         public IIncentiveRepository Incentives => _incentivesRepository;
+        
+        public IServiceBracketRepository ServiceBrackets => _serviceBracketsRepository;
 
         public IRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity
         {

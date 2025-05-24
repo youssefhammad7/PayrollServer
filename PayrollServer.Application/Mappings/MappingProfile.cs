@@ -12,6 +12,8 @@ using PayrollServer.Application.Features.JobGrade.Requests;
 using PayrollServer.Application.Features.SalaryRecord.Requests;
 using PayrollServer.Domain.Entities;
 using System.Linq;
+using PayrollServer.Application.DTOs.ServiceBracket;
+using PayrollServer.Application.Features.ServiceBracket.Requests;
 
 namespace PayrollServer.Application.Mappings
 {
@@ -78,6 +80,11 @@ namespace PayrollServer.Application.Mappings
                 
             CreateMap<CreateIncentiveRequest, Incentive>();
             CreateMap<UpdateIncentiveRequest, Incentive>();
+            
+            // ServiceBracket mappings
+            CreateMap<ServiceBracket, ServiceBracketDto>();
+            CreateMap<CreateServiceBracketRequest, ServiceBracket>();
+            CreateMap<UpdateServiceBracketRequest, ServiceBracket>();
         }
     }
 } 
