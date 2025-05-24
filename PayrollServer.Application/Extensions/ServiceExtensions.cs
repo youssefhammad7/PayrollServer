@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using PayrollServer.Application.DTOs.Request;
 using PayrollServer.Application.Features.Department.Requests;
 using PayrollServer.Application.Features.Department.Validators;
+using PayrollServer.Application.Features.Employee.Requests;
+using PayrollServer.Application.Features.Employee.Validators;
 using PayrollServer.Application.Features.JobGrade.Requests;
 using PayrollServer.Application.Features.JobGrade.Validators;
 using PayrollServer.Application.Interfaces.Services;
@@ -27,9 +29,10 @@ namespace PayrollServer.Application.Extensions
             // Register Identity Services
             // services.AddScoped<IIdentityService, IdentityService>();
 
-            // Register Department and JobGrade Services
+            // Register Domain Services
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IJobGradeService, JobGradeService>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
 
             // Register specific validators
             // TODO: Uncomment these once the validators are implemented
@@ -47,6 +50,10 @@ namespace PayrollServer.Application.Extensions
             // JobGrade validators
             services.AddScoped<IValidator<CreateJobGradeRequest>, CreateJobGradeValidator>();
             services.AddScoped<IValidator<UpdateJobGradeRequest>, UpdateJobGradeValidator>();
+            
+            // Employee validators
+            services.AddScoped<IValidator<CreateEmployeeRequest>, CreateEmployeeValidator>();
+            services.AddScoped<IValidator<UpdateEmployeeRequest>, UpdateEmployeeValidator>();
 
             return services;
         }

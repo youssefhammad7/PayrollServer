@@ -16,21 +16,26 @@ namespace PayrollServer.Infrastructure.Data.Repositories
         // Specific repositories
         private readonly IDepartmentRepository _departmentsRepository;
         private readonly IJobGradeRepository _jobGradesRepository;
+        private readonly IEmployeeRepository _employeesRepository;
 
         public UnitOfWork(
             ApplicationDbContext context,
             IDepartmentRepository departmentRepository,
-            IJobGradeRepository jobGradeRepository)
+            IJobGradeRepository jobGradeRepository,
+            IEmployeeRepository employeeRepository)
         {
             _context = context;
             _repositories = new Dictionary<Type, object>();
             _departmentsRepository = departmentRepository;
             _jobGradesRepository = jobGradeRepository;
+            _employeesRepository = employeeRepository;
         }
 
         public IDepartmentRepository Departments => _departmentsRepository;
         
         public IJobGradeRepository JobGrades => _jobGradesRepository;
+        
+        public IEmployeeRepository Employees => _employeesRepository;
 
         public IRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity
         {

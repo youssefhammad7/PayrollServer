@@ -11,6 +11,7 @@ using PayrollServer.Infrastructure.Data.Repositories;
 using PayrollServer.Infrastructure.Identity.Interfaces;
 using PayrollServer.Infrastructure.Identity.Services;
 using PayrollServer.Infrastructure.Logging;
+using PayrollServer.Infrastructure.Repositories;
 using PayrollServer.Infrastructure.Services.Email;
 using Serilog;
 using System;
@@ -90,6 +91,7 @@ namespace PayrollServer.Infrastructure.Extensions
                 // Configure Specific Repositories
                 services.AddScoped<IDepartmentRepository, DepartmentRepository>();
                 services.AddScoped<IJobGradeRepository, JobGradeRepository>();
+                services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
                 // Configure Logging
                 var logger = LoggerService.CreateLogger(configuration);
