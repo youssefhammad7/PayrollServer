@@ -1,15 +1,12 @@
 using System;
 
-namespace PayrollServer.Domain.Entities
+namespace PayrollServer.Application.Features.SalaryRecord.Requests
 {
-    public class SalaryRecord : BaseEntity
+    public class CreateSalaryRecordRequest
     {
         public int EmployeeId { get; set; }
         public decimal BaseSalary { get; set; }
         public DateTime EffectiveDate { get; set; }
         public string Notes { get; set; }
-        
-        // Navigation properties
-        public virtual Employee Employee { get; set; }
     }
 } 

@@ -8,6 +8,8 @@ using PayrollServer.Application.Features.Employee.Requests;
 using PayrollServer.Application.Features.Employee.Validators;
 using PayrollServer.Application.Features.JobGrade.Requests;
 using PayrollServer.Application.Features.JobGrade.Validators;
+using PayrollServer.Application.Features.SalaryRecord.Requests;
+using PayrollServer.Application.Features.SalaryRecord.Validators;
 using PayrollServer.Application.Interfaces.Services;
 using PayrollServer.Application.Services;
 using PayrollServer.Application.Validators;
@@ -33,6 +35,7 @@ namespace PayrollServer.Application.Extensions
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IJobGradeService, JobGradeService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<ISalaryRecordService, SalaryRecordService>();
 
             // Register specific validators
             // TODO: Uncomment these once the validators are implemented
@@ -54,6 +57,10 @@ namespace PayrollServer.Application.Extensions
             // Employee validators
             services.AddScoped<IValidator<CreateEmployeeRequest>, CreateEmployeeValidator>();
             services.AddScoped<IValidator<UpdateEmployeeRequest>, UpdateEmployeeValidator>();
+            
+            // SalaryRecord validators
+            services.AddScoped<IValidator<CreateSalaryRecordRequest>, CreateSalaryRecordValidator>();
+            services.AddScoped<IValidator<UpdateSalaryRecordRequest>, UpdateSalaryRecordValidator>();
 
             return services;
         }

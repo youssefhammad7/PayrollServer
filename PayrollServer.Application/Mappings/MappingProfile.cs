@@ -3,9 +3,11 @@ using PayrollServer.Application.DTOs.Response;
 using PayrollServer.Application.DTOs.Department;
 using PayrollServer.Application.DTOs.Employee;
 using PayrollServer.Application.DTOs.JobGrade;
+using PayrollServer.Application.DTOs.SalaryRecord;
 using PayrollServer.Application.Features.Department.Requests;
 using PayrollServer.Application.Features.Employee.Requests;
 using PayrollServer.Application.Features.JobGrade.Requests;
+using PayrollServer.Application.Features.SalaryRecord.Requests;
 using PayrollServer.Domain.Entities;
 using System.Linq;
 
@@ -58,6 +60,14 @@ namespace PayrollServer.Application.Mappings
                 
             CreateMap<CreateEmployeeRequest, Employee>();
             CreateMap<UpdateEmployeeRequest, Employee>();
+            
+            // SalaryRecord mappings
+            CreateMap<SalaryRecord, SalaryRecordDto>()
+                .ForMember(dest => dest.EmployeeName, opt => opt.Ignore())
+                .ForMember(dest => dest.EmployeeNumber, opt => opt.Ignore());
+                
+            CreateMap<CreateSalaryRecordRequest, SalaryRecord>();
+            CreateMap<UpdateSalaryRecordRequest, SalaryRecord>();
         }
     }
 } 

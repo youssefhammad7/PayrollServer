@@ -1,6 +1,7 @@
 using PayrollServer.Domain.Entities;
 using PayrollServer.Domain.Interfaces.Repositories;
 using PayrollServer.Infrastructure.Data.Context;
+using PayrollServer.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,18 +18,21 @@ namespace PayrollServer.Infrastructure.Data.Repositories
         private readonly IDepartmentRepository _departmentsRepository;
         private readonly IJobGradeRepository _jobGradesRepository;
         private readonly IEmployeeRepository _employeesRepository;
+        private readonly ISalaryRecordRepository _salaryRecordsRepository;
 
         public UnitOfWork(
             ApplicationDbContext context,
             IDepartmentRepository departmentRepository,
             IJobGradeRepository jobGradeRepository,
-            IEmployeeRepository employeeRepository)
+            IEmployeeRepository employeeRepository,
+            ISalaryRecordRepository salaryRecordRepository)
         {
             _context = context;
             _repositories = new Dictionary<Type, object>();
             _departmentsRepository = departmentRepository;
             _jobGradesRepository = jobGradeRepository;
             _employeesRepository = employeeRepository;
+            _salaryRecordsRepository = salaryRecordRepository;
         }
 
         public IDepartmentRepository Departments => _departmentsRepository;
@@ -36,6 +40,8 @@ namespace PayrollServer.Infrastructure.Data.Repositories
         public IJobGradeRepository JobGrades => _jobGradesRepository;
         
         public IEmployeeRepository Employees => _employeesRepository;
+        
+        public ISalaryRecordRepository SalaryRecords => _salaryRecordsRepository;
 
         public IRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity
         {

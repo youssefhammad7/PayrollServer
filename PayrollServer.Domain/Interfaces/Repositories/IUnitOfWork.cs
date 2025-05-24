@@ -12,6 +12,7 @@ namespace PayrollServer.Domain.Interfaces.Repositories
         IDepartmentRepository Departments { get; }
         IJobGradeRepository JobGrades { get; }
         IEmployeeRepository Employees { get; }
+        ISalaryRecordRepository SalaryRecords { get; }
         
         // Save changes methods
         int Complete();
