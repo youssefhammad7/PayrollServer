@@ -9,8 +9,12 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 // Set up Serilog
-Log.Logger = LoggerService.CreateLogger(builder.Configuration);
-builder.Host.UseSerilog();
+builder.Host.UseSerilog((context, configuration) => {
+    // Load configuration from LoggerService
+    var logger = LoggerService.CreateLogger(context.Configuration);
+    // Combine with configuration from appsettings.json
+    configuration.ReadFrom.Configuration(context.Configuration);
+});
 
 // Add services to the container.
 builder.Services.AddInfrastructure(builder.Configuration);

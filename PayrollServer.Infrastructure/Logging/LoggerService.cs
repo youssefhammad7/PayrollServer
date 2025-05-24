@@ -1,7 +1,10 @@
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
+using Serilog.Sinks.MSSqlServer;
 using System;
+using System.Collections.ObjectModel;
+using System.Data;
 using System.IO;
 
 namespace PayrollServer.Infrastructure.Logging
@@ -18,6 +21,34 @@ namespace PayrollServer.Infrastructure.Logging
                 Directory.CreateDirectory(logFolder);
             }
 
+            // Get connection string from configuration
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+            // SQL Server sink configuration
+            var sinkOptions = new MSSqlServerSinkOptions
+            {
+                TableName = "Logs",
+                AutoCreateSqlTable = true,
+                BatchPostingLimit = 50,
+                BatchPeriod = TimeSpan.FromSeconds(5)
+            };
+
+            // Define the SQL Server columns
+            var columnOptions = new ColumnOptions
+            {
+                AdditionalColumns = new Collection<SqlColumn>
+                {
+                    new SqlColumn { ColumnName = "UserName", DataType = SqlDbType.NVarChar, DataLength = 256 },
+                    new SqlColumn { ColumnName = "SourceContext", DataType = SqlDbType.NVarChar, DataLength = 256 },
+                    new SqlColumn { ColumnName = "RequestPath", DataType = SqlDbType.NVarChar, DataLength = 256 },
+                    new SqlColumn { ColumnName = "ActionName", DataType = SqlDbType.NVarChar, DataLength = 256 }
+                }
+            };
+
+            // Set which standard columns to include
+            columnOptions.Store.Add(StandardColumn.LogEvent);
+            columnOptions.TimeStamp.ConvertToUtc = true;
+
             return new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
@@ -28,13 +59,10 @@ namespace PayrollServer.Infrastructure.Logging
                 .Enrich.WithProcessId()
                 .Enrich.WithThreadId()
                 .WriteTo.Console()
-                .WriteTo.File(
-                    logPath,
-                    rollingInterval: RollingInterval.Day,
-                    rollOnFileSizeLimit: true,
-                    fileSizeLimitBytes: 10 * 1024 * 1024, // 10MB
-                    retainedFileCountLimit: 31,
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+                .WriteTo.MSSqlServer(
+                    connectionString: connectionString,
+                    sinkOptions: sinkOptions,
+                    columnOptions: columnOptions)
                 .CreateLogger();
         }
     }

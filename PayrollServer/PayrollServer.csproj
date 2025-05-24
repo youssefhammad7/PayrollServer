@@ -7,6 +7,17 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Filters\**" />
+	  <Compile Remove="Middleware\**" />
+	  <Content Remove="Filters\**" />
+	  <Content Remove="Middleware\**" />
+	  <EmbeddedResource Remove="Filters\**" />
+	  <EmbeddedResource Remove="Middleware\**" />
+	  <None Remove="Filters\**" />
+	  <None Remove="Middleware\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.25" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.25">
 			<PrivateAssets>all</PrivateAssets>
@@ -16,9 +27,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Middleware\" />
 		<Folder Include="Extensions\" />
-		<Folder Include="Filters\" />
 	</ItemGroup>
 
 	<ItemGroup>
