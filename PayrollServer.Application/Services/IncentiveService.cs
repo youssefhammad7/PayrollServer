@@ -132,7 +132,7 @@ namespace PayrollServer.Application.Services
             // Populate DTO with employee details
             var incentiveDto = _mapper.Map<IncentiveDto>(incentive);
             incentiveDto.EmployeeName = $"{employee.FirstName} {employee.LastName}";
-            incentiveDto.EmployeeNumber = employee.EmployeeId;
+            incentiveDto.EmployeeNumber = employee.EmployeeNumber;
 
             return incentiveDto;
         }
@@ -170,7 +170,7 @@ namespace PayrollServer.Application.Services
             // Populate DTO with employee details
             var incentiveDto = _mapper.Map<IncentiveDto>(incentive);
             incentiveDto.EmployeeName = $"{employee.FirstName} {employee.LastName}";
-            incentiveDto.EmployeeNumber = employee.EmployeeId;
+            incentiveDto.EmployeeNumber = employee.EmployeeNumber;
 
             return incentiveDto;
         }

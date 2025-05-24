@@ -11,5 +11,7 @@ namespace PayrollServer.Domain.Interfaces.Repositories
         Task<ServiceBracket> GetServiceBracketForYearsOfServiceAsync(int yearsOfService);
         
         Task<bool> CheckForOverlappingBracketsAsync(int minYears, int? maxYears, int? excludeId = null);
+
+        Task<ServiceBracket> GetBracketForYearsOfServiceAsync(int yearsOfService);
     }
 } 

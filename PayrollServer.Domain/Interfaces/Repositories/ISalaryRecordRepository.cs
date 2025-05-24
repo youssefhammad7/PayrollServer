@@ -1,4 +1,5 @@
 using PayrollServer.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,10 +7,12 @@ namespace PayrollServer.Domain.Interfaces.Repositories
 {
     public interface ISalaryRecordRepository : IRepository<SalaryRecord>
     {
-        Task<IEnumerable<SalaryRecord>> GetSalaryRecordsForEmployeeAsync(int employeeId);
+        Task<IEnumerable<SalaryRecord>> GetSalaryHistoryForEmployeeAsync(int employeeId);
         
         Task<SalaryRecord> GetCurrentSalaryForEmployeeAsync(int employeeId);
         
-        Task<bool> IsDuplicateEffectiveDateAsync(int employeeId, System.DateTime effectiveDate, int? excludeId = null);
+        Task<SalaryRecord> GetMostRecentSalaryAsync(int employeeId, DateTime asOfDate);
+        
+        Task<bool> HasOverlappingEffectiveDateAsync(int employeeId, DateTime effectiveDate, int? excludeId = null);
     }
 } 

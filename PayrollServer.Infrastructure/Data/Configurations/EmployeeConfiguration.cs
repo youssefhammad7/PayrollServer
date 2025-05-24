@@ -12,7 +12,7 @@ namespace PayrollServer.Infrastructure.Data.Configurations
 
             builder.HasKey(e => e.Id);
             
-            builder.Property(e => e.EmployeeId)
+            builder.Property(e => e.EmployeeNumber)
                 .IsRequired()
                 .HasMaxLength(20);
                 
@@ -33,13 +33,13 @@ namespace PayrollServer.Infrastructure.Data.Configurations
             builder.Property(e => e.Email)
                 .HasMaxLength(100);
                 
-            builder.Property(e => e.EmploymentStatus)
+            builder.Property(e => e.Status)
                 .IsRequired()
                 .HasMaxLength(20)
                 .HasDefaultValue("Active");
                 
             // Temporarily remove filtered unique indexes
-            builder.HasIndex(e => e.EmployeeId)
+            builder.HasIndex(e => e.EmployeeNumber)
                 .IsUnique();
                 
             builder.HasIndex(e => e.Email)

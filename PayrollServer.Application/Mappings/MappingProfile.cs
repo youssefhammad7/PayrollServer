@@ -16,6 +16,7 @@ using PayrollServer.Application.DTOs.ServiceBracket;
 using PayrollServer.Application.Features.ServiceBracket.Requests;
 using PayrollServer.Application.DTOs.AbsenceRecord;
 using PayrollServer.Application.DTOs.AbsenceThreshold;
+using PayrollServer.Application.DTOs.PayrollSnapshot;
 using PayrollServer.Application.Features.AbsenceRecord.Requests;
 using PayrollServer.Application.Features.AbsenceThreshold.Requests;
 
@@ -101,6 +102,24 @@ namespace PayrollServer.Application.Mappings
             CreateMap<AbsenceThreshold, AbsenceThresholdDto>();
             CreateMap<CreateAbsenceThresholdRequest, AbsenceThreshold>();
             CreateMap<UpdateAbsenceThresholdRequest, AbsenceThreshold>();
+            
+            // PayrollSnapshot mappings
+            CreateMap<PayrollSnapshot, PayrollSnapshotDto>()
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => 
+                    src.Employee != null ? $"{src.Employee.FirstName} {src.Employee.LastName}" : string.Empty))
+                .ForMember(dest => dest.EmployeeNumber, opt => opt.MapFrom(src => 
+                    src.Employee != null ? src.Employee.EmployeeNumber : string.Empty))
+                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => 
+                    src.Employee != null && src.Employee.Department != null ? src.Employee.Department.Name : string.Empty))
+                .ForMember(dest => dest.JobGradeName, opt => opt.MapFrom(src => 
+                    src.Employee != null && src.Employee.JobGrade != null ? src.Employee.JobGrade.Name : string.Empty));
+            
+            CreateMap<PayrollSnapshotDto, PayrollSnapshot>()
+                .ForMember(dest => dest.Employee, opt => opt.Ignore())
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.IsDeleted, opt => opt.Ignore());
         }
     }
 } 

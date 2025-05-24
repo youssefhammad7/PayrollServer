@@ -97,6 +97,7 @@ namespace PayrollServer.Infrastructure.Extensions
                 services.AddScoped<IServiceBracketRepository, ServiceBracketRepository>();
                 services.AddScoped<IAbsenceRecordRepository, AbsenceRecordRepository>();
                 services.AddScoped<IAbsenceThresholdRepository, AbsenceThresholdRepository>();
+                services.AddScoped<IPayrollSnapshotRepository, PayrollSnapshotRepository>();
 
                 // Configure Logging
                 var logger = LoggerService.CreateLogger(configuration);

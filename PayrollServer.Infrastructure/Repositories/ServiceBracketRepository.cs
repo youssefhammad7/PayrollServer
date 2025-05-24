@@ -72,5 +72,10 @@ namespace PayrollServer.Infrastructure.Repositories
 
             return overlappingBrackets;
         }
+
+        public async Task<ServiceBracket> GetBracketForYearsOfServiceAsync(int yearsOfService)
+        {
+            return await GetServiceBracketForYearsOfServiceAsync(yearsOfService);
+        }
     }
 } 

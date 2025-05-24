@@ -42,7 +42,7 @@ namespace PayrollServer.Application.Services
 
             if (employeeId.HasValue)
             {
-                salaryRecords = await _unitOfWork.SalaryRecords.GetSalaryRecordsForEmployeeAsync(employeeId.Value);
+                salaryRecords = await _unitOfWork.SalaryRecords.GetSalaryHistoryForEmployeeAsync(employeeId.Value);
             }
             else
             {
@@ -73,7 +73,7 @@ namespace PayrollServer.Application.Services
                 throw new EntityNotFoundException("Employee", employeeId);
             }
 
-            var salaryRecords = await _unitOfWork.SalaryRecords.GetSalaryRecordsForEmployeeAsync(employeeId);
+            var salaryRecords = await _unitOfWork.SalaryRecords.GetSalaryHistoryForEmployeeAsync(employeeId);
             return _mapper.Map<IEnumerable<SalaryRecordDto>>(salaryRecords);
         }
 
@@ -121,7 +121,7 @@ namespace PayrollServer.Application.Services
             }
 
             // Check for duplicate effective date
-            var isDuplicateDate = await _unitOfWork.SalaryRecords.IsDuplicateEffectiveDateAsync(
+            var isDuplicateDate = await _unitOfWork.SalaryRecords.HasOverlappingEffectiveDateAsync(
                 request.EmployeeId, 
                 request.EffectiveDate
             );
@@ -149,7 +149,7 @@ namespace PayrollServer.Application.Services
             // Populate DTO with employee details
             var salaryRecordDto = _mapper.Map<SalaryRecordDto>(salaryRecord);
             salaryRecordDto.EmployeeName = $"{employee.FirstName} {employee.LastName}";
-            salaryRecordDto.EmployeeNumber = employee.EmployeeId;
+            salaryRecordDto.EmployeeNumber = employee.EmployeeNumber;
 
             return salaryRecordDto;
         }
@@ -185,7 +185,7 @@ namespace PayrollServer.Application.Services
             // Check for duplicate effective date if date is changing
             if (salaryRecord.EffectiveDate != request.EffectiveDate)
             {
-                var isDuplicateDate = await _unitOfWork.SalaryRecords.IsDuplicateEffectiveDateAsync(
+                var isDuplicateDate = await _unitOfWork.SalaryRecords.HasOverlappingEffectiveDateAsync(
                     salaryRecord.EmployeeId, 
                     request.EffectiveDate,
                     id
@@ -211,7 +211,7 @@ namespace PayrollServer.Application.Services
             // Populate DTO with employee details
             var salaryRecordDto = _mapper.Map<SalaryRecordDto>(salaryRecord);
             salaryRecordDto.EmployeeName = $"{employee.FirstName} {employee.LastName}";
-            salaryRecordDto.EmployeeNumber = employee.EmployeeId;
+            salaryRecordDto.EmployeeNumber = employee.EmployeeNumber;
 
             return salaryRecordDto;
         }
@@ -226,7 +226,7 @@ namespace PayrollServer.Application.Services
             }
 
             // Check if this is the only salary record for the employee
-            var employeeSalaryRecords = await _unitOfWork.SalaryRecords.GetSalaryRecordsForEmployeeAsync(salaryRecord.EmployeeId);
+            var employeeSalaryRecords = await _unitOfWork.SalaryRecords.GetSalaryHistoryForEmployeeAsync(salaryRecord.EmployeeId);
             var recordCount = employeeSalaryRecords.Count(record => record.Id != id);
             
             if (recordCount == 0)

@@ -63,7 +63,7 @@ namespace PayrollServer.Application.Services
 
         public async Task<EmployeeDto> GetEmployeeByEmployeeIdAsync(string employeeId)
         {
-            var employee = await _unitOfWork.Employees.GetEmployeeByEmployeeIdAsync(employeeId);
+            var employee = await _unitOfWork.Employees.GetEmployeeByEmployeeNumberAsync(employeeId);
             
             if (employee == null)
             {
@@ -97,7 +97,7 @@ namespace PayrollServer.Application.Services
             }
 
             // Check for duplicate employee ID
-            var existingEmployee = await _unitOfWork.Employees.GetEmployeeByEmployeeIdAsync(request.EmployeeId);
+            var existingEmployee = await _unitOfWork.Employees.GetEmployeeByEmployeeNumberAsync(request.EmployeeId);
             if (existingEmployee != null)
             {
                 throw new BusinessRuleViolationException("Duplicate employee ID", "An employee with this ID already exists");
@@ -112,7 +112,7 @@ namespace PayrollServer.Application.Services
 
             // Create new employee
             var employee = _mapper.Map<Employee>(request);
-            employee.EmploymentStatus = "Active"; // Default status for new employees
+            employee.Status = "Active"; // Default status for new employees
             
             await _unitOfWork.Employees.AddAsync(employee);
             await _unitOfWork.CompleteAsync();
@@ -195,7 +195,7 @@ namespace PayrollServer.Application.Services
             employee.Email = request.Email;
             employee.DepartmentId = request.DepartmentId;
             employee.JobGradeId = request.JobGradeId;
-            employee.EmploymentStatus = request.EmploymentStatus;
+            employee.Status = request.EmploymentStatus;
 
             _unitOfWork.Employees.Update(employee);
             await _unitOfWork.CompleteAsync();

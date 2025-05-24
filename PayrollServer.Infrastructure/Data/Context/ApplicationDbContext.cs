@@ -27,6 +27,7 @@ namespace PayrollServer.Infrastructure.Data.Context
         public DbSet<ServiceBracket> ServiceBrackets { get; set; }
         public DbSet<AbsenceRecord> AbsenceRecords { get; set; }
         public DbSet<AbsenceThreshold> AbsenceThresholds { get; set; }
+        public DbSet<PayrollSnapshot> PayrollSnapshots { get; set; }
 
         public override int SaveChanges()
         {

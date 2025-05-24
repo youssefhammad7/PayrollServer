@@ -13,7 +13,7 @@ namespace PayrollServer.Domain.Entities
         }
         
         // Basic information
-        public string EmployeeId { get; set; } = string.Empty; // Employee ID (not the primary key)
+        public string EmployeeNumber { get; set; } = string.Empty; // Employee ID (not the primary key)
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public DateTime DateOfBirth { get; set; }
@@ -22,8 +22,8 @@ namespace PayrollServer.Domain.Entities
         public string Email { get; set; } = string.Empty;
         
         // Employment details
-        public DateTime HiringDate { get; set; }
-        public string EmploymentStatus { get; set; } = "Active"; // Active, Inactive, Terminated, etc.
+        public DateTime? HiringDate { get; set; }
+        public string Status { get; set; } = "Active"; // Active, Inactive, Terminated, etc.
         
         // Foreign keys
         public int DepartmentId { get; set; }

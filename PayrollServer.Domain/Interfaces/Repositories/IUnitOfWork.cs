@@ -17,6 +17,7 @@ namespace PayrollServer.Domain.Interfaces.Repositories
         IServiceBracketRepository ServiceBrackets { get; }
         IAbsenceRecordRepository AbsenceRecords { get; }
         IAbsenceThresholdRepository AbsenceThresholds { get; }
+        IPayrollSnapshotRepository PayrollSnapshots { get; }
         
         // Save changes methods
         int Complete();

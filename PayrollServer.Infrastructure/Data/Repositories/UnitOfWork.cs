@@ -23,6 +23,7 @@ namespace PayrollServer.Infrastructure.Data.Repositories
         private readonly IServiceBracketRepository _serviceBracketsRepository;
         private readonly IAbsenceRecordRepository _absenceRecordsRepository;
         private readonly IAbsenceThresholdRepository _absenceThresholdsRepository;
+        private readonly IPayrollSnapshotRepository _payrollSnapshotsRepository;
 
         public UnitOfWork(
             ApplicationDbContext context,
@@ -33,7 +34,8 @@ namespace PayrollServer.Infrastructure.Data.Repositories
             IIncentiveRepository incentiveRepository,
             IServiceBracketRepository serviceBracketRepository,
             IAbsenceRecordRepository absenceRecordRepository,
-            IAbsenceThresholdRepository absenceThresholdRepository)
+            IAbsenceThresholdRepository absenceThresholdRepository,
+            IPayrollSnapshotRepository payrollSnapshotRepository)
         {
             _context = context;
             _repositories = new Dictionary<Type, object>();
@@ -45,6 +47,7 @@ namespace PayrollServer.Infrastructure.Data.Repositories
             _serviceBracketsRepository = serviceBracketRepository;
             _absenceRecordsRepository = absenceRecordRepository;
             _absenceThresholdsRepository = absenceThresholdRepository;
+            _payrollSnapshotsRepository = payrollSnapshotRepository;
         }
 
         public IDepartmentRepository Departments => _departmentsRepository;
@@ -57,7 +60,13 @@ namespace PayrollServer.Infrastructure.Data.Repositories
         
         public IIncentiveRepository Incentives => _incentivesRepository;
         
-        public IServiceBracketRepository ServiceBrackets => _serviceBracketsRepository;                public IAbsenceRecordRepository AbsenceRecords => _absenceRecordsRepository;                public IAbsenceThresholdRepository AbsenceThresholds => _absenceThresholdsRepository;
+        public IServiceBracketRepository ServiceBrackets => _serviceBracketsRepository;
+        
+        public IAbsenceRecordRepository AbsenceRecords => _absenceRecordsRepository;
+        
+        public IAbsenceThresholdRepository AbsenceThresholds => _absenceThresholdsRepository;
+        
+        public IPayrollSnapshotRepository PayrollSnapshots => _payrollSnapshotsRepository;
 
         public IRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity
         {

@@ -32,7 +32,7 @@ namespace PayrollServer.Infrastructure.Repositories
                 query = query.Where(e => 
                     e.FirstName.ToLower().Contains(searchTerm) || 
                     e.LastName.ToLower().Contains(searchTerm) || 
-                    e.EmployeeId.ToLower().Contains(searchTerm) || 
+                    e.EmployeeNumber.ToLower().Contains(searchTerm) || 
                     e.Email.ToLower().Contains(searchTerm));
             }
 
@@ -72,13 +72,76 @@ namespace PayrollServer.Infrastructure.Repositories
             return employee;
         }
 
-        public async Task<Employee> GetEmployeeByEmployeeIdAsync(string employeeId)
+        public async Task<IEnumerable<Employee>> GetAllWithDetailsAsync()
         {
             return await _context.Employees
                 .Include(e => e.Department)
                 .Include(e => e.JobGrade)
                 .Include(e => e.SalaryRecords.OrderByDescending(s => s.EffectiveDate))
-                .FirstOrDefaultAsync(e => e.EmployeeId == employeeId);
+                .OrderBy(e => e.LastName)
+                .ThenBy(e => e.FirstName)
+                .ToListAsync();
+        }
+
+        public async Task<Employee> GetByIdWithDetailsAsync(int id)
+        {
+            return await _context.Employees
+                .Include(e => e.Department)
+                .Include(e => e.JobGrade)
+                .Include(e => e.SalaryRecords.OrderByDescending(s => s.EffectiveDate))
+                .FirstOrDefaultAsync(e => e.Id == id);
+        }
+
+        public async Task<IEnumerable<Employee>> GetByDepartmentAsync(int departmentId)
+        {
+            return await _context.Employees
+                .Include(e => e.JobGrade)
+                .Where(e => e.DepartmentId == departmentId)
+                .OrderBy(e => e.LastName)
+                .ThenBy(e => e.FirstName)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Employee>> GetByJobGradeAsync(int jobGradeId)
+        {
+            return await _context.Employees
+                .Include(e => e.Department)
+                .Where(e => e.JobGradeId == jobGradeId)
+                .OrderBy(e => e.LastName)
+                .ThenBy(e => e.FirstName)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Employee>> GetAllActiveEmployeesAsync()
+        {
+            return await _context.Employees
+                .Include(e => e.Department)
+                .Include(e => e.JobGrade)
+                .Where(e => !e.IsDeleted && e.Status == "Active")
+                .OrderBy(e => e.LastName)
+                .ThenBy(e => e.FirstName)
+                .ToListAsync();
+        }
+
+        public async Task<Employee> GetEmployeeByEmployeeNumberAsync(string employeeNumber)
+        {
+            return await _context.Employees
+                .Include(e => e.Department)
+                .Include(e => e.JobGrade)
+                .Include(e => e.SalaryRecords.OrderByDescending(s => s.EffectiveDate))
+                .FirstOrDefaultAsync(e => e.EmployeeNumber == employeeNumber);
+        }
+
+        public async Task<bool> IsEmployeeNumberUniqueAsync(string employeeNumber, int? excludeId = null)
+        {
+            var query = _context.Employees.AsQueryable();
+
+            if (excludeId.HasValue)
+            {
+                query = query.Where(e => e.Id != excludeId.Value);
+            }
+
+            return !await query.AnyAsync(e => e.EmployeeNumber == employeeNumber);
         }
 
         public async Task<bool> IsDuplicateEmailAsync(string email, int? excludeId = null)
@@ -111,7 +174,7 @@ namespace PayrollServer.Infrastructure.Repositories
                 query = query.Where(e => 
                     e.FirstName.ToLower().Contains(searchTerm) || 
                     e.LastName.ToLower().Contains(searchTerm) || 
-                    e.EmployeeId.ToLower().Contains(searchTerm) || 
+                    e.EmployeeNumber.ToLower().Contains(searchTerm) || 
                     e.Email.ToLower().Contains(searchTerm));
             }
 

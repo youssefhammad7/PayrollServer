@@ -16,7 +16,7 @@ namespace PayrollServer.Infrastructure.Repositories
         {
         }
 
-        public async Task<IEnumerable<SalaryRecord>> GetSalaryRecordsForEmployeeAsync(int employeeId)
+        public async Task<IEnumerable<SalaryRecord>> GetSalaryHistoryForEmployeeAsync(int employeeId)
         {
             return await _context.SalaryRecords
                 .Where(s => s.EmployeeId == employeeId)
@@ -33,8 +33,17 @@ namespace PayrollServer.Infrastructure.Repositories
                 .ThenByDescending(s => s.CreatedAt)
                 .FirstOrDefaultAsync();
         }
+        
+        public async Task<SalaryRecord> GetMostRecentSalaryAsync(int employeeId, DateTime asOfDate)
+        {
+            return await _context.SalaryRecords
+                .Where(s => s.EmployeeId == employeeId && s.EffectiveDate <= asOfDate)
+                .OrderByDescending(s => s.EffectiveDate)
+                .ThenByDescending(s => s.CreatedAt)
+                .FirstOrDefaultAsync();
+        }
 
-        public async Task<bool> IsDuplicateEffectiveDateAsync(int employeeId, DateTime effectiveDate, int? excludeId = null)
+        public async Task<bool> HasOverlappingEffectiveDateAsync(int employeeId, DateTime effectiveDate, int? excludeId = null)
         {
             var query = _context.SalaryRecords
                 .Where(s => s.EmployeeId == employeeId && s.EffectiveDate.Date == effectiveDate.Date);
