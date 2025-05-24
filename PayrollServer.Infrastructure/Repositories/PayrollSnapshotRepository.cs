@@ -65,5 +65,19 @@ namespace PayrollServer.Infrastructure.Repositories
                 .ThenBy(p => p.Employee.FirstName)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<PayrollSnapshot>> GetPayrollSnapshotsForMonthAsync(int year, int month)
+        {
+            return await _context.PayrollSnapshots
+                .Include(p => p.Employee)
+                    .ThenInclude(e => e.Department)
+                .Include(p => p.Employee)
+                    .ThenInclude(e => e.JobGrade)
+                .Where(p => p.Year == year && p.Month == month)
+                .OrderBy(p => p.Employee.Department.Name)
+                .ThenBy(p => p.Employee.LastName)
+                .ThenBy(p => p.Employee.FirstName)
+                .ToListAsync();
+        }
     }
 } 

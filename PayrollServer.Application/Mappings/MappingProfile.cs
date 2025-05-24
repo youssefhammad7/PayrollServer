@@ -4,6 +4,7 @@ using PayrollServer.Application.DTOs.Department;
 using PayrollServer.Application.DTOs.Employee;
 using PayrollServer.Application.DTOs.Incentive;
 using PayrollServer.Application.DTOs.JobGrade;
+using PayrollServer.Application.DTOs.Report;
 using PayrollServer.Application.DTOs.SalaryRecord;
 using PayrollServer.Application.Features.Department.Requests;
 using PayrollServer.Application.Features.Employee.Requests;
@@ -120,6 +121,46 @@ namespace PayrollServer.Application.Mappings
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.IsDeleted, opt => opt.Ignore());
+                
+            // Report mappings
+            CreateMap<AbsenceRecord, AttendanceReportDto>()
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => 
+                    $"{src.Employee.FirstName} {src.Employee.LastName}"))
+                .ForMember(dest => dest.EmployeeNumber, opt => opt.MapFrom(src => 
+                    src.Employee.EmployeeNumber))
+                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => 
+                    src.Employee.Department.Name))
+                .ForMember(dest => dest.AdjustmentAmount, opt => opt.Ignore())
+                .ForMember(dest => dest.LastUpdated, opt => opt.MapFrom(src => 
+                    src.UpdatedAt ?? src.CreatedAt));
+                
+            CreateMap<PayrollSnapshot, IncentiveReportDto>()
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => 
+                    $"{src.Employee.FirstName} {src.Employee.LastName}"))
+                .ForMember(dest => dest.EmployeeNumber, opt => opt.MapFrom(src => 
+                    src.Employee.EmployeeNumber))
+                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => 
+                    src.Employee.Department.Name));
+                
+            CreateMap<Employee, EmployeeDirectoryDto>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => 
+                    $"{src.FirstName} {src.LastName}"))
+                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => 
+                    src.Department.Name))
+                .ForMember(dest => dest.JobGradeName, opt => opt.MapFrom(src => 
+                    src.JobGrade.Name))
+                .ForMember(dest => dest.YearsOfService, opt => opt.Ignore());
+                
+            CreateMap<PayrollSnapshot, SalaryReportDto>()
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => 
+                    $"{src.Employee.FirstName} {src.Employee.LastName}"))
+                .ForMember(dest => dest.EmployeeNumber, opt => opt.MapFrom(src => 
+                    src.Employee.EmployeeNumber))
+                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => 
+                    src.Employee.Department.Name))
+                .ForMember(dest => dest.JobGradeName, opt => opt.MapFrom(src => 
+                    src.Employee.JobGrade.Name))
+                .ForMember(dest => dest.HasPayrollRecord, opt => opt.MapFrom(src => true));
         }
     }
 } 

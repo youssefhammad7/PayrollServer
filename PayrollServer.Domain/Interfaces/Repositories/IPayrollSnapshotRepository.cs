@@ -15,5 +15,10 @@ namespace PayrollServer.Domain.Interfaces.Repositories
         Task<bool> ExistsForMonthAsync(int employeeId, int year, int month);
         
         Task<IEnumerable<PayrollSnapshot>> GetPayrollSnapshotsByDepartmentAsync(int departmentId, int year, int month);
+        
+        /// <summary>
+        /// Get all payroll snapshots for a specific month with employee and department details
+        /// </summary>
+        Task<IEnumerable<PayrollSnapshot>> GetPayrollSnapshotsForMonthAsync(int year, int month);
     }
 } 

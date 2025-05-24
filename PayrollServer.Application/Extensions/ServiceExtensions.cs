@@ -49,6 +49,7 @@ namespace PayrollServer.Application.Extensions
             services.AddScoped<IAbsenceRecordService, AbsenceRecordService>();
             services.AddScoped<IAbsenceThresholdService, AbsenceThresholdService>();
             services.AddScoped<IPayrollCalculationService, PayrollCalculationService>();
+            services.AddScoped<IReportingService, ReportingService>();
 
             // Register specific validators
             // TODO: Uncomment these once the validators are implemented
