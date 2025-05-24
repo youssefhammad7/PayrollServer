@@ -14,6 +14,10 @@ using PayrollServer.Domain.Entities;
 using System.Linq;
 using PayrollServer.Application.DTOs.ServiceBracket;
 using PayrollServer.Application.Features.ServiceBracket.Requests;
+using PayrollServer.Application.DTOs.AbsenceRecord;
+using PayrollServer.Application.DTOs.AbsenceThreshold;
+using PayrollServer.Application.Features.AbsenceRecord.Requests;
+using PayrollServer.Application.Features.AbsenceThreshold.Requests;
 
 namespace PayrollServer.Application.Mappings
 {
@@ -85,6 +89,18 @@ namespace PayrollServer.Application.Mappings
             CreateMap<ServiceBracket, ServiceBracketDto>();
             CreateMap<CreateServiceBracketRequest, ServiceBracket>();
             CreateMap<UpdateServiceBracketRequest, ServiceBracket>();
+            
+            // AbsenceRecord mappings
+            CreateMap<AbsenceRecord, AbsenceRecordDto>()
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => 
+                    $"{src.Employee.FirstName} {src.Employee.LastName}"));
+            CreateMap<CreateAbsenceRecordRequest, AbsenceRecord>();
+            CreateMap<UpdateAbsenceRecordRequest, AbsenceRecord>();
+            
+            // AbsenceThreshold mappings
+            CreateMap<AbsenceThreshold, AbsenceThresholdDto>();
+            CreateMap<CreateAbsenceThresholdRequest, AbsenceThreshold>();
+            CreateMap<UpdateAbsenceThresholdRequest, AbsenceThreshold>();
         }
     }
 } 

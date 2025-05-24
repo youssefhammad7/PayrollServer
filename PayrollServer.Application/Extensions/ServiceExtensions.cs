@@ -2,6 +2,10 @@ using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using PayrollServer.Application.DTOs.Request;
+using PayrollServer.Application.Features.AbsenceRecord.Requests;
+using PayrollServer.Application.Features.AbsenceRecord.Validators;
+using PayrollServer.Application.Features.AbsenceThreshold.Requests;
+using PayrollServer.Application.Features.AbsenceThreshold.Validators;
 using PayrollServer.Application.Features.Department.Requests;
 using PayrollServer.Application.Features.Department.Validators;
 using PayrollServer.Application.Features.Employee.Requests;
@@ -42,6 +46,8 @@ namespace PayrollServer.Application.Extensions
             services.AddScoped<ISalaryRecordService, SalaryRecordService>();
             services.AddScoped<IIncentiveService, IncentiveService>();
             services.AddScoped<IServiceBracketService, ServiceBracketService>();
+            services.AddScoped<IAbsenceRecordService, AbsenceRecordService>();
+            services.AddScoped<IAbsenceThresholdService, AbsenceThresholdService>();
 
             // Register specific validators
             // TODO: Uncomment these once the validators are implemented
@@ -75,6 +81,14 @@ namespace PayrollServer.Application.Extensions
             // ServiceBracket validators
             services.AddScoped<IValidator<CreateServiceBracketRequest>, CreateServiceBracketValidator>();
             services.AddScoped<UpdateServiceBracketValidator>();
+            
+            // AbsenceRecord validators
+            services.AddScoped<IValidator<CreateAbsenceRecordRequest>, CreateAbsenceRecordValidator>();
+            services.AddScoped<IValidator<UpdateAbsenceRecordRequest>, UpdateAbsenceRecordValidator>();
+            
+            // AbsenceThreshold validators
+            services.AddScoped<IValidator<CreateAbsenceThresholdRequest>, CreateAbsenceThresholdValidator>();
+            services.AddScoped<UpdateAbsenceThresholdValidator>();
 
             return services;
         }
