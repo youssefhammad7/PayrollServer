@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using PayrollServer.Domain.Entities;
 using PayrollServer.Domain.Interfaces.Repositories;
 using PayrollServer.Infrastructure.Data.Context;
-using PayrollServer.Infrastructure.Data.Repositories;
 using PayrollServer.Infrastructure.Identity.Interfaces;
 using PayrollServer.Infrastructure.Identity.Services;
 using PayrollServer.Infrastructure.Logging;

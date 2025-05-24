@@ -3,7 +3,6 @@ using PayrollServer.Domain.Entities;
 using PayrollServer.Domain.Exceptions;
 using PayrollServer.Domain.Interfaces.Repositories;
 using PayrollServer.Infrastructure.Data.Context;
-using PayrollServer.Infrastructure.Data.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;

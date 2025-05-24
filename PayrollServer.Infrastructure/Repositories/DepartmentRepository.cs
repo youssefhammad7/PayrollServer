@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PayrollServer.Infrastructure.Data.Repositories
+namespace PayrollServer.Infrastructure.Repositories
 {
     public class DepartmentRepository : Repository<Department>, IDepartmentRepository
     {
@@ -37,12 +37,12 @@ namespace PayrollServer.Infrastructure.Data.Repositories
         public async Task<bool> IsDuplicateNameAsync(string name, int? excludeId = null)
         {
             var query = _dbSet.Where(d => d.Name == name && !d.IsDeleted);
-            
+
             if (excludeId.HasValue)
             {
                 query = query.Where(d => d.Id != excludeId.Value);
             }
-            
+
             return await query.AnyAsync();
         }
 
@@ -52,7 +52,7 @@ namespace PayrollServer.Infrastructure.Data.Repositories
             var department = await _dbSet
                 .Include(d => d.IncentiveHistories.Where(h => !h.IsDeleted))
                 .FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
-                
+
             return department ?? throw new Domain.Exceptions.EntityNotFoundException(typeof(Department).Name, id.ToString());
         }
 
@@ -64,4 +64,4 @@ namespace PayrollServer.Infrastructure.Data.Repositories
                 .ToListAsync();
         }
     }
-} 
+}

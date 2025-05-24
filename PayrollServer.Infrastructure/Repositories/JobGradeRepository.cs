@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PayrollServer.Infrastructure.Data.Repositories
+namespace PayrollServer.Infrastructure.Repositories
 {
     public class JobGradeRepository : Repository<JobGrade>, IJobGradeRepository
     {
@@ -29,12 +29,12 @@ namespace PayrollServer.Infrastructure.Data.Repositories
         public async Task<bool> IsDuplicateNameAsync(string name, int? excludeId = null)
         {
             var query = _dbSet.Where(j => j.Name == name && !j.IsDeleted);
-            
+
             if (excludeId.HasValue)
             {
                 query = query.Where(j => j.Id != excludeId.Value);
             }
-            
+
             return await query.AnyAsync();
         }
 
@@ -47,4 +47,4 @@ namespace PayrollServer.Infrastructure.Data.Repositories
                 .ToListAsync();
         }
     }
-} 
+}

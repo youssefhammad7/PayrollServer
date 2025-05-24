@@ -1,19 +1,18 @@
 using PayrollServer.Domain.Entities;
 using PayrollServer.Domain.Interfaces.Repositories;
 using PayrollServer.Infrastructure.Data.Context;
-using PayrollServer.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PayrollServer.Infrastructure.Data.Repositories
+namespace PayrollServer.Infrastructure.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
         private readonly Dictionary<Type, object> _repositories;
         private bool _disposed;
-        
+
         // Specific repositories
         private readonly IDepartmentRepository _departmentsRepository;
         private readonly IJobGradeRepository _jobGradesRepository;
@@ -51,21 +50,21 @@ namespace PayrollServer.Infrastructure.Data.Repositories
         }
 
         public IDepartmentRepository Departments => _departmentsRepository;
-        
+
         public IJobGradeRepository JobGrades => _jobGradesRepository;
-        
+
         public IEmployeeRepository Employees => _employeesRepository;
-        
+
         public ISalaryRecordRepository SalaryRecords => _salaryRecordsRepository;
-        
+
         public IIncentiveRepository Incentives => _incentivesRepository;
-        
+
         public IServiceBracketRepository ServiceBrackets => _serviceBracketsRepository;
-        
+
         public IAbsenceRecordRepository AbsenceRecords => _absenceRecordsRepository;
-        
+
         public IAbsenceThresholdRepository AbsenceThresholds => _absenceThresholdsRepository;
-        
+
         public IPayrollSnapshotRepository PayrollSnapshots => _payrollSnapshotsRepository;
 
         public IRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity
@@ -114,4 +113,4 @@ namespace PayrollServer.Infrastructure.Data.Repositories
             }
         }
     }
-} 
+}

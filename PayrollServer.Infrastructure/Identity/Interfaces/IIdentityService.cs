@@ -13,7 +13,6 @@ namespace PayrollServer.Infrastructure.Identity.Interfaces
         Task<ApplicationUser?> GetUserByIdAsync(string userId);
         Task<ApplicationUser?> GetUserByEmailAsync(string email);
         Task<IList<string>> GetUserRolesAsync(string userId);
-        //Task<bool> AddToRoleAsync(string userId, string role);
         Task<bool> RemoveFromRoleAsync(string userId, string role);
         Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword);
         Task<(bool isSuccessful, string message)> ForgotPasswordAsync(string email);

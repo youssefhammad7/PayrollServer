@@ -9,7 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace PayrollServer.Infrastructure.Data.Repositories
+namespace PayrollServer.Infrastructure.Repositories
 {
     public class Repository<T> : IRepository<T> where T : BaseEntity
     {
@@ -138,4 +138,4 @@ namespace PayrollServer.Infrastructure.Data.Repositories
             return await _dbSet.AnyAsync(predicate);
         }
     }
-} 
+}

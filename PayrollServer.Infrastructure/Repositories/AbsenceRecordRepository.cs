@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using PayrollServer.Domain.Entities;
 using PayrollServer.Domain.Interfaces.Repositories;
 using PayrollServer.Infrastructure.Data.Context;
-using PayrollServer.Infrastructure.Data.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
