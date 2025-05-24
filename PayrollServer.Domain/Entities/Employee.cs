@@ -9,6 +9,7 @@ namespace PayrollServer.Domain.Entities
         {
             SalaryRecords = new HashSet<SalaryRecord>();
             AbsenceRecords = new HashSet<AbsenceRecord>();
+            Incentives = new HashSet<Incentive>();
         }
         
         // Basic information
@@ -33,5 +34,6 @@ namespace PayrollServer.Domain.Entities
         public virtual JobGrade JobGrade { get; set; } = null!;
         public virtual ICollection<SalaryRecord> SalaryRecords { get; set; }
         public virtual ICollection<AbsenceRecord> AbsenceRecords { get; set; }
+        public virtual ICollection<Incentive> Incentives { get; set; }
     }
 } 

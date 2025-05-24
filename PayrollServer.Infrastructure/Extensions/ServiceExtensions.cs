@@ -93,6 +93,7 @@ namespace PayrollServer.Infrastructure.Extensions
                 services.AddScoped<IJobGradeRepository, JobGradeRepository>();
                 services.AddScoped<IEmployeeRepository, EmployeeRepository>();
                 services.AddScoped<ISalaryRecordRepository, SalaryRecordRepository>();
+                services.AddScoped<IIncentiveRepository, IncentiveRepository>();
 
                 // Configure Logging
                 var logger = LoggerService.CreateLogger(configuration);

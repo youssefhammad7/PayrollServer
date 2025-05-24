@@ -2,10 +2,12 @@ using AutoMapper;
 using PayrollServer.Application.DTOs.Response;
 using PayrollServer.Application.DTOs.Department;
 using PayrollServer.Application.DTOs.Employee;
+using PayrollServer.Application.DTOs.Incentive;
 using PayrollServer.Application.DTOs.JobGrade;
 using PayrollServer.Application.DTOs.SalaryRecord;
 using PayrollServer.Application.Features.Department.Requests;
 using PayrollServer.Application.Features.Employee.Requests;
+using PayrollServer.Application.Features.Incentive.Requests;
 using PayrollServer.Application.Features.JobGrade.Requests;
 using PayrollServer.Application.Features.SalaryRecord.Requests;
 using PayrollServer.Domain.Entities;
@@ -56,7 +58,7 @@ namespace PayrollServer.Application.Mappings
                 .ForMember(dest => dest.SalaryEffectiveDate, opt => opt.MapFrom(src => 
                     src.SalaryRecords != null && src.SalaryRecords.Any()
                     ? src.SalaryRecords.OrderByDescending(s => s.EffectiveDate).FirstOrDefault().EffectiveDate
-                    : (DateTime?)null));
+                    : (System.DateTime?)null));
                 
             CreateMap<CreateEmployeeRequest, Employee>();
             CreateMap<UpdateEmployeeRequest, Employee>();
@@ -68,6 +70,14 @@ namespace PayrollServer.Application.Mappings
                 
             CreateMap<CreateSalaryRecordRequest, SalaryRecord>();
             CreateMap<UpdateSalaryRecordRequest, SalaryRecord>();
+            
+            // Incentive mappings
+            CreateMap<Incentive, IncentiveDto>()
+                .ForMember(dest => dest.EmployeeName, opt => opt.Ignore())
+                .ForMember(dest => dest.EmployeeNumber, opt => opt.Ignore());
+                
+            CreateMap<CreateIncentiveRequest, Incentive>();
+            CreateMap<UpdateIncentiveRequest, Incentive>();
         }
     }
 } 

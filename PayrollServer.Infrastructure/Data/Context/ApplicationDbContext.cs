@@ -23,6 +23,7 @@ namespace PayrollServer.Infrastructure.Data.Context
         public DbSet<JobGrade> JobGrades { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<SalaryRecord> SalaryRecords { get; set; }
+        public DbSet<Incentive> Incentives { get; set; }
         public DbSet<AbsenceRecord> AbsenceRecords { get; set; }
 
         public override int SaveChanges()
