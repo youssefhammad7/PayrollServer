@@ -83,9 +83,13 @@ namespace PayrollServer.Infrastructure.Extensions
                 // Configure Identity Services
                 services.AddScoped<IIdentityService, IdentityService>();
 
-                // Configure Repositories
+                // Configure Generic Repository and Unit of Work
                 services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
                 services.AddScoped<IUnitOfWork, UnitOfWork>();
+                
+                // Configure Specific Repositories
+                services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+                services.AddScoped<IJobGradeRepository, JobGradeRepository>();
 
                 // Configure Logging
                 var logger = LoggerService.CreateLogger(configuration);

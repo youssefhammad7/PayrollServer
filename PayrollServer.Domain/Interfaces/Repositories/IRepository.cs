@@ -9,8 +9,8 @@ namespace PayrollServer.Domain.Interfaces.Repositories
 {
     public interface IRepository<T> where T : BaseEntity
     {
-        T GetById(Guid id);
-        Task<T> GetByIdAsync(Guid id);
+        T GetById(int id);
+        Task<T> GetByIdAsync(int id);
         IEnumerable<T> GetAll();
         Task<IEnumerable<T>> GetAllAsync();
         IEnumerable<T> Find(Expression<Func<T, bool>> predicate);

@@ -17,6 +17,14 @@ namespace PayrollServer.Infrastructure.Data.Context
         {
         }
 
+        // DbSet properties for new entities
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<DepartmentIncentiveHistory> DepartmentIncentiveHistories { get; set; }
+        public DbSet<JobGrade> JobGrades { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<SalaryRecord> SalaryRecords { get; set; }
+        public DbSet<AbsenceRecord> AbsenceRecords { get; set; }
+
         public override int SaveChanges()
         {
             UpdateAuditFields();

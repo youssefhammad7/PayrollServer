@@ -22,16 +22,16 @@ namespace PayrollServer.Infrastructure.Data.Repositories
             _dbSet = context.Set<T>();
         }
 
-        public virtual T GetById(Guid id)
+        public virtual T GetById(int id)
         {
             var entity = _dbSet.Find(id);
-            return entity ?? throw new EntityNotFoundException(typeof(T).Name, id);
+            return entity ?? throw new EntityNotFoundException(typeof(T).Name, id.ToString());
         }
 
-        public virtual async Task<T> GetByIdAsync(Guid id)
+        public virtual async Task<T> GetByIdAsync(int id)
         {
             var entity = await _dbSet.FindAsync(id);
-            return entity ?? throw new EntityNotFoundException(typeof(T).Name, id);
+            return entity ?? throw new EntityNotFoundException(typeof(T).Name, id.ToString());
         }
 
         public virtual IEnumerable<T> GetAll()
