@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using PayrollServer.Application.Extensions;
+using PayrollServer.Infrastructure.Data.Seeds;
 using PayrollServer.Infrastructure.Extensions;
 using PayrollServer.Infrastructure.Logging;
 using Serilog;
@@ -8,8 +9,12 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 // Set up Serilog
-Log.Logger = LoggerService.CreateLogger(builder.Configuration);
-builder.Host.UseSerilog();
+builder.Host.UseSerilog((context, configuration) => {
+    // Load configuration from LoggerService
+    var logger = LoggerService.CreateLogger(context.Configuration);
+    // Combine with configuration from appsettings.json
+    configuration.ReadFrom.Configuration(context.Configuration);
+});
 
 // Add services to the container.
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -90,8 +95,11 @@ app.MapControllers();
 
 try
 {
+    // Initialize database and seed data
+    await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
+    
     Log.Information("Starting PayrollServer API");
-    app.Run();
+    await app.RunAsync();
 }
 catch (Exception ex)
 {

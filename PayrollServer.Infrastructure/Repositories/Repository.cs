@@ -9,7 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace PayrollServer.Infrastructure.Data.Repositories
+namespace PayrollServer.Infrastructure.Repositories
 {
     public class Repository<T> : IRepository<T> where T : BaseEntity
     {
@@ -22,16 +22,16 @@ namespace PayrollServer.Infrastructure.Data.Repositories
             _dbSet = context.Set<T>();
         }
 
-        public virtual T GetById(Guid id)
+        public virtual T GetById(int id)
         {
             var entity = _dbSet.Find(id);
-            return entity ?? throw new EntityNotFoundException(typeof(T).Name, id);
+            return entity ?? throw new EntityNotFoundException(typeof(T).Name, id.ToString());
         }
 
-        public virtual async Task<T> GetByIdAsync(Guid id)
+        public virtual async Task<T> GetByIdAsync(int id)
         {
             var entity = await _dbSet.FindAsync(id);
-            return entity ?? throw new EntityNotFoundException(typeof(T).Name, id);
+            return entity ?? throw new EntityNotFoundException(typeof(T).Name, id.ToString());
         }
 
         public virtual IEnumerable<T> GetAll()
@@ -138,4 +138,4 @@ namespace PayrollServer.Infrastructure.Data.Repositories
             return await _dbSet.AnyAsync(predicate);
         }
     }
-} 
+}

@@ -7,10 +7,10 @@ using Microsoft.IdentityModel.Tokens;
 using PayrollServer.Domain.Entities;
 using PayrollServer.Domain.Interfaces.Repositories;
 using PayrollServer.Infrastructure.Data.Context;
-using PayrollServer.Infrastructure.Data.Repositories;
 using PayrollServer.Infrastructure.Identity.Interfaces;
 using PayrollServer.Infrastructure.Identity.Services;
 using PayrollServer.Infrastructure.Logging;
+using PayrollServer.Infrastructure.Repositories;
 using PayrollServer.Infrastructure.Services.Email;
 using Serilog;
 using System;
@@ -83,9 +83,20 @@ namespace PayrollServer.Infrastructure.Extensions
                 // Configure Identity Services
                 services.AddScoped<IIdentityService, IdentityService>();
 
-                // Configure Repositories
+                // Configure Generic Repository and Unit of Work
                 services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
                 services.AddScoped<IUnitOfWork, UnitOfWork>();
+                
+                // Configure Specific Repositories
+                services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+                services.AddScoped<IJobGradeRepository, JobGradeRepository>();
+                services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+                services.AddScoped<ISalaryRecordRepository, SalaryRecordRepository>();
+                services.AddScoped<IIncentiveRepository, IncentiveRepository>();
+                services.AddScoped<IServiceBracketRepository, ServiceBracketRepository>();
+                services.AddScoped<IAbsenceRecordRepository, AbsenceRecordRepository>();
+                services.AddScoped<IAbsenceThresholdRepository, AbsenceThresholdRepository>();
+                services.AddScoped<IPayrollSnapshotRepository, PayrollSnapshotRepository>();
 
                 // Configure Logging
                 var logger = LoggerService.CreateLogger(configuration);
