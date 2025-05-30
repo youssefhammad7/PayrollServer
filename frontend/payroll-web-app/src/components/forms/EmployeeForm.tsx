@@ -134,14 +134,14 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ mode }) => {
   useEffect(() => {
     if (mode === 'edit' && employee) {
       const formData: EmployeeFormData = {
-        employeeId: employee.employeeId,
+        employeeId: employee.employeeNumber || '',
         firstName: employee.firstName,
         lastName: employee.lastName,
         email: employee.email,
         phoneNumber: employee.phoneNumber || '',
         address: employee.address || '',
         dateOfBirth: employee.dateOfBirth.split('T')[0],
-        hireDate: employee.hireDate.split('T')[0],
+        hireDate: employee.hiringDate.split('T')[0],
         departmentId: employee.departmentId.toString(),
         jobGradeId: employee.jobGradeId.toString(),
       };

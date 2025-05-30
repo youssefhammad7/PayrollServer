@@ -1,35 +1,42 @@
 // Employee types based on backend API structure
 
 export interface Employee {
-  id: string;
-  employeeId: string;
+  id: number;                    // Primary key (integer)
+  employeeNumber?: string;       // The display employee ID (may be missing from DTO)
   firstName: string;
   lastName: string;
+  fullName?: string;             // Computed property from backend
   email: string;
   phoneNumber?: string;
   address?: string;
-  dateOfBirth: string;
-  hireDate: string;
+  dateOfBirth: string;          // ISO date string
+  hiringDate: string;           // Required - ISO date string
+  employmentStatus: string;     // Required - Active/Inactive etc  
   departmentId: number;
   departmentName?: string;
+  departmentIncentivePercentage?: number;
   jobGradeId: number;
   jobGradeName?: string;
-  isActive: boolean;
+  jobGradeMinSalary?: number;
+  jobGradeMaxSalary?: number;
+  currentSalary?: number;
+  salaryEffectiveDate?: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
 export interface CreateEmployeeRequest {
-  employeeId: string;
+  employeeId: string;             // Maps to EmployeeNumber in backend
   firstName: string;
   lastName: string;
   email: string;
   phoneNumber?: string;
   address?: string;
-  dateOfBirth: string;
-  hireDate: string;
+  dateOfBirth: string;           // Will be converted to DateTime by backend
+  hireDate: string;              // Will be converted to HiringDate by backend  
   departmentId: number;
   jobGradeId: number;
+  initialSalary?: number;        // Optional initial salary
 }
 
 export interface UpdateEmployeeRequest extends CreateEmployeeRequest {
@@ -37,7 +44,7 @@ export interface UpdateEmployeeRequest extends CreateEmployeeRequest {
 }
 
 export interface EmployeesResponse {
-  employees: Employee[];
+  items: Employee[];              // Backend returns "Items", not "employees"
   totalCount: number;
   pageNumber: number;
   pageSize: number;
@@ -45,12 +52,12 @@ export interface EmployeesResponse {
 }
 
 export interface EmployeeQueryParams {
-  pageNumber?: number;
+  page?: number;                  // Backend expects "page", not "pageNumber"
   pageSize?: number;
   searchTerm?: string;
   departmentId?: number;
   jobGradeId?: number;
-  isActive?: boolean;
+  // Note: Backend doesn't have isActive filter, uses employmentStatus
 }
 
 // Form data structure for React Hook Form
@@ -71,15 +78,20 @@ export interface EmployeeFormData {
 export interface Department {
   id: number;
   name: string;
-  description?: string;
-  isActive: boolean;
+  incentivePercentage?: number;    // Matches backend DepartmentDto
+  incentiveSetDate?: string;
+  employeeCount: number;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface JobGrade {
   id: number;
   name: string;
+  description: string;             // Required in backend
   minSalary: number;
   maxSalary: number;
-  description?: string;
-  isActive: boolean;
+  employeeCount: number;
+  createdAt: string;
+  updatedAt?: string;
 } 

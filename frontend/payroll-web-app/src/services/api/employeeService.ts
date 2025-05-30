@@ -16,12 +16,11 @@ class EmployeeService {
     try {
       const queryParams = new URLSearchParams();
       
-      if (params.pageNumber) queryParams.append('pageNumber', params.pageNumber.toString());
+      if (params.page) queryParams.append('page', params.page.toString());
       if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
       if (params.searchTerm) queryParams.append('searchTerm', params.searchTerm);
       if (params.departmentId) queryParams.append('departmentId', params.departmentId.toString());
       if (params.jobGradeId) queryParams.append('jobGradeId', params.jobGradeId.toString());
-      if (params.isActive !== undefined) queryParams.append('isActive', params.isActive.toString());
 
       const response = await apiClient.get<ApiResponse<EmployeesResponse>>(
         `/employees?${queryParams.toString()}`

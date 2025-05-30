@@ -66,12 +66,11 @@ export const EmployeeList: React.FC = () => {
 
   // Build query parameters
   const queryParams: EmployeeQueryParams = {
-    pageNumber: paginationModel.page + 1,
+    page: paginationModel.page + 1,
     pageSize: paginationModel.pageSize,
     searchTerm: searchTerm || undefined,
     departmentId: departmentFilter ? (isNaN(parseInt(departmentFilter, 10)) ? undefined : parseInt(departmentFilter, 10)) : undefined,
     jobGradeId: jobGradeFilter ? (isNaN(parseInt(jobGradeFilter, 10)) ? undefined : parseInt(jobGradeFilter, 10)) : undefined,
-    isActive: statusFilter === 'all' ? undefined : statusFilter === 'active',
   };
 
   // Fetch employees data
@@ -118,7 +117,7 @@ export const EmployeeList: React.FC = () => {
   // Define grid columns
   const columns: GridColDef<Employee>[] = [
     {
-      field: 'employeeId',
+      field: 'id',
       headerName: 'Employee ID',
       width: 120,
       sortable: true,
@@ -128,8 +127,6 @@ export const EmployeeList: React.FC = () => {
       headerName: 'Full Name',
       width: 200,
       sortable: true,
-      valueGetter: (params: any) => 
-        `${params.row.firstName} ${params.row.lastName}`,
     },
     {
       field: 'email',
@@ -150,29 +147,35 @@ export const EmployeeList: React.FC = () => {
       sortable: true,
     },
     {
-      field: 'hireDate',
+      field: 'hiringDate',
       headerName: 'Hire Date',
       width: 120,
       sortable: true,
       valueFormatter: (params: any) => {
-        if (params.value) {
-          return new Date(params.value as string).toLocaleDateString();
+        const date = params.value;
+        if (!date || date === '0001-01-01T00:00:00') return 'Not set';
+        try {
+          return new Date(date).toLocaleDateString();
+        } catch {
+          return 'Invalid date';
         }
-        return '';
       },
     },
     {
-      field: 'isActive',
+      field: 'employmentStatus',
       headerName: 'Status',
       width: 100,
       sortable: true,
-      renderCell: (params) => (
-        <Chip
-          label={params.value ? 'Active' : 'Inactive'}
-          color={params.value ? 'success' : 'default'}
-          size="small"
-        />
-      ),
+      renderCell: (params) => {
+        const status = params.value || 'Unknown';
+        return (
+          <Chip
+            label={status === 'Active' ? 'Active' : status || 'Unknown'}
+            color={status === 'Active' ? 'success' : 'default'}
+            size="small"
+          />
+        );
+      },
     },
     {
       field: 'actions',
@@ -180,29 +183,33 @@ export const EmployeeList: React.FC = () => {
       headerName: 'Actions',
       width: 150,
       getActions: (params: GridRowParams<Employee>) => {
+        const row = params.row;
+        if (!row) return [];
+        
         const actions = [
           <GridActionsCellItem
             key="view"
             icon={<Visibility />}
             label="View"
-            onClick={() => navigate(`/employees/${params.row.id}`)}
+            onClick={() => navigate(`/employees/${row.id}`)}
           />,
         ];
 
         if (isAdmin() || isHRClerk()) {
-          if (params.row.isActive) {
+          const isActive = row.employmentStatus === 'Active';
+          if (isActive) {
             actions.push(
               <GridActionsCellItem
                 key="edit"
                 icon={<Edit />}
                 label="Edit"
-                onClick={() => navigate(`/employees/${params.row.id}/edit`)}
+                onClick={() => navigate(`/employees/${row.id}/edit`)}
               />,
               <GridActionsCellItem
                 key="delete"
                 icon={<Delete />}
                 label="Delete"
-                onClick={() => setDeleteDialog({ open: true, employee: params.row })}
+                onClick={() => setDeleteDialog({ open: true, employee: row })}
               />
             );
           } else {
@@ -211,7 +218,7 @@ export const EmployeeList: React.FC = () => {
                 key="restore"
                 icon={<Restore />}
                 label="Restore"
-                onClick={() => restoreMutation.mutate(params.row.id)}
+                onClick={() => restoreMutation.mutate(row.id.toString())}
               />
             );
           }
@@ -236,9 +243,13 @@ export const EmployeeList: React.FC = () => {
 
   const handleDeleteConfirm = () => {
     if (deleteDialog.employee) {
-      deleteMutation.mutate(deleteDialog.employee.id);
+      deleteMutation.mutate(deleteDialog.employee.id.toString());
     }
   };
+
+  // Debug logging
+  console.log('EmployeeList - employeesData:', employeesData);
+  console.log('EmployeeList - items:', employeesData?.items);
 
   if (employeesError) {
     return (
@@ -345,7 +356,7 @@ export const EmployeeList: React.FC = () => {
       {/* Data Grid */}
       <Paper sx={{ height: 600, width: '100%' }}>
         <DataGrid
-          rows={employeesData?.employees || []}
+          rows={employeesData?.items || []}
           columns={columns}
           rowCount={employeesData?.totalCount || 0}
           loading={employeesLoading || isPlaceholderData}
@@ -375,7 +386,7 @@ export const EmployeeList: React.FC = () => {
           <Typography>
             Are you sure you want to delete employee{' '}
             <strong>
-              {deleteDialog.employee?.firstName} {deleteDialog.employee?.lastName}
+              {deleteDialog.employee?.firstName || ''} {deleteDialog.employee?.lastName || ''}
             </strong>
             ? This action can be undone by restoring the employee.
           </Typography>

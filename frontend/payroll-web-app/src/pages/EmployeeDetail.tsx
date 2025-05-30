@@ -99,9 +99,9 @@ export const EmployeeDetail: React.FC = () => {
     );
   }
 
-  const canEdit = (isAdmin() || isHRClerk()) && employee.isActive;
-  const canDelete = (isAdmin() || isHRClerk()) && employee.isActive;
-  const canRestore = (isAdmin() || isHRClerk()) && !employee.isActive;
+  const canEdit = (isAdmin() || isHRClerk()) && employee.employmentStatus === 'Active';
+  const canDelete = (isAdmin() || isHRClerk()) && employee.employmentStatus === 'Active';
+  const canRestore = (isAdmin() || isHRClerk()) && employee.employmentStatus !== 'Active' && employee.employmentStatus !== null;
 
   return (
     <Box sx={{ p: 3 }}>
@@ -128,11 +128,11 @@ export const EmployeeDetail: React.FC = () => {
           </Typography>
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
             <Typography variant="h6" color="text.secondary">
-              {employee.employeeId}
+              {employee.employeeNumber || `ID: ${employee.id}`}
             </Typography>
             <Chip
-              label={employee.isActive ? 'Active' : 'Inactive'}
-              color={employee.isActive ? 'success' : 'default'}
+              label={employee.employmentStatus || 'Unknown'}
+              color={employee.employmentStatus === 'Active' ? 'success' : 'default'}
               size="small"
             />
           </Box>
@@ -212,7 +212,7 @@ export const EmployeeDetail: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <CalendarToday sx={{ mr: 1, fontSize: 16, color: 'text.secondary' }} />
                   <Typography variant="body1">
-                    {new Date(employee.dateOfBirth).toLocaleDateString()}
+                    {employee.dateOfBirth ? new Date(employee.dateOfBirth).toLocaleDateString() : 'Not provided'}
                   </Typography>
                 </Box>
               </Box>
@@ -300,7 +300,9 @@ export const EmployeeDetail: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <CalendarToday sx={{ mr: 1, fontSize: 16, color: 'text.secondary' }} />
                   <Typography variant="body1">
-                    {new Date(employee.hireDate).toLocaleDateString()}
+                    {employee.hiringDate && employee.hiringDate !== '0001-01-01T00:00:00' 
+                      ? new Date(employee.hiringDate).toLocaleDateString() 
+                      : 'Not set'}
                   </Typography>
                 </Box>
               </Box>
@@ -310,8 +312,8 @@ export const EmployeeDetail: React.FC = () => {
                   Status
                 </Typography>
                 <Chip
-                  label={employee.isActive ? 'Active' : 'Inactive'}
-                  color={employee.isActive ? 'success' : 'default'}
+                  label={employee.employmentStatus || 'Unknown'}
+                  color={employee.employmentStatus === 'Active' ? 'success' : 'default'}
                   size="small"
                 />
               </Box>
@@ -342,7 +344,7 @@ export const EmployeeDetail: React.FC = () => {
                   Last Updated
                 </Typography>
                 <Typography variant="body1">
-                  {new Date(employee.updatedAt).toLocaleString()}
+                  {employee.updatedAt ? new Date(employee.updatedAt).toLocaleString() : 'Never updated'}
                 </Typography>
               </Box>
             </Box>
@@ -356,7 +358,7 @@ export const EmployeeDetail: React.FC = () => {
         <DialogContent>
           <Typography>
             Are you sure you want to delete employee{' '}
-            <strong>{employee.firstName} {employee.lastName}</strong>?
+            <strong>{employee.fullName}</strong>?
             This action can be undone by restoring the employee.
           </Typography>
         </DialogContent>
