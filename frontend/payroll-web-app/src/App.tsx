@@ -15,6 +15,9 @@ import { DepartmentForm } from './components/forms/DepartmentForm';
 import { DepartmentDetail } from './pages/DepartmentDetail';
 import { DepartmentIncentiveForm } from './components/forms/DepartmentIncentiveForm';
 import { DepartmentIncentiveHistoryPage } from './pages/DepartmentIncentiveHistory';
+import { JobGradeList } from './pages/JobGradeList';
+import { JobGradeDetail } from './pages/JobGradeDetail';
+import { JobGradeForm } from './components/forms/JobGradeForm';
 
 // Debug component to help identify issues
 const DebugApp = () => {
@@ -111,8 +114,32 @@ function App() {
                 <Route
                   path="job-grades"
                   element={
-                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
-                      <div>Job Grades Management (Coming Soon)</div>
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk', 'Read-Only']}>
+                      <JobGradeList />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="job-grades/create"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin']}>
+                      <JobGradeForm mode="create" />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="job-grades/:id"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk', 'Read-Only']}>
+                      <JobGradeDetail />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="job-grades/:id/edit"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin']}>
+                      <JobGradeForm mode="edit" />
                     </ProtectedRoute>
                   }
                 />
