@@ -21,6 +21,9 @@ import { JobGradeForm } from './components/forms/JobGradeForm';
 import { ServiceBracketList } from './pages/ServiceBracketList';
 import { ServiceBracketDetail } from './pages/ServiceBracketDetail';
 import { ServiceBracketForm } from './components/forms/ServiceBracketForm';
+import { AbsenceThresholdList } from './pages/AbsenceThresholdList';
+import { AbsenceThresholdDetail } from './pages/AbsenceThresholdDetail';
+import { AbsenceThresholdForm } from './components/forms/AbsenceThresholdForm';
 
 // Debug component to help identify issues
 const DebugApp = () => {
@@ -181,8 +184,32 @@ function App() {
                 <Route
                   path="absence-thresholds"
                   element={
-                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
-                      <div>Absence Thresholds Management (Coming Soon)</div>
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk', 'Read-Only']}>
+                      <AbsenceThresholdList />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="absence-thresholds/create"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin']}>
+                      <AbsenceThresholdForm mode="create" />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="absence-thresholds/:id"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk', 'Read-Only']}>
+                      <AbsenceThresholdDetail />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="absence-thresholds/:id/edit"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin']}>
+                      <AbsenceThresholdForm mode="edit" />
                     </ProtectedRoute>
                   }
                 />
