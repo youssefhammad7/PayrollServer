@@ -10,6 +10,11 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { EmployeeList } from './pages/EmployeeList';
 import { EmployeeDetail } from './pages/EmployeeDetail';
 import { EmployeeForm } from './components/forms/EmployeeForm';
+import { DepartmentList } from './pages/DepartmentList';
+import { DepartmentForm } from './components/forms/DepartmentForm';
+import { DepartmentDetail } from './pages/DepartmentDetail';
+import { DepartmentIncentiveForm } from './components/forms/DepartmentIncentiveForm';
+import { DepartmentIncentiveHistoryPage } from './pages/DepartmentIncentiveHistory';
 
 // Debug component to help identify issues
 const DebugApp = () => {
@@ -75,7 +80,31 @@ function App() {
                   path="departments"
                   element={
                     <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
-                      <div>Departments Management (Coming Soon)</div>
+                      <DepartmentList />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="departments/create"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
+                      <DepartmentForm mode="create" />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="departments/:id"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk', 'Read-Only']}>
+                      <DepartmentDetail />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="departments/:id/edit"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
+                      <DepartmentForm mode="edit" />
                     </ProtectedRoute>
                   }
                 />
@@ -166,6 +195,24 @@ function App() {
                 {/* Settings and Profile - Available to all authenticated users */}
                 <Route path="settings" element={<div>Settings (Coming Soon)</div>} />
                 <Route path="profile" element={<div>Profile (Coming Soon)</div>} />
+                
+                {/* Department routes - HR Clerk can add, everyone can view */}
+                <Route
+                  path="departments/:id/incentive"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin']}>
+                      <DepartmentIncentiveForm />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="departments/:id/history"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
+                      <DepartmentIncentiveHistoryPage />
+                    </ProtectedRoute>
+                  }
+                />
                 
                 {/* Default redirect */}
                 <Route path="" element={<Navigate to="/dashboard" replace />} />

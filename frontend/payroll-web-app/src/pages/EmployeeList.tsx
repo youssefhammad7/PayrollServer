@@ -247,10 +247,6 @@ export const EmployeeList: React.FC = () => {
     }
   };
 
-  // Debug logging
-  console.log('EmployeeList - employeesData:', employeesData);
-  console.log('EmployeeList - items:', employeesData?.items);
-
   if (employeesError) {
     return (
       <Box sx={{ p: 3 }}>
