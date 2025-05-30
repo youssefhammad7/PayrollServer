@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PayrollServer.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class ServiceBracketsController : BaseApiController
     {
         private readonly IServiceBracketService _serviceBracketService;

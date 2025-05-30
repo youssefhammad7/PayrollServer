@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PayrollServer.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class SalaryRecordsController : BaseApiController
     {
         private readonly ISalaryRecordService _salaryRecordService;

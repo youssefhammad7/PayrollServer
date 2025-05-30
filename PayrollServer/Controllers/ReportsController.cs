@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace PayrollServer.Controllers
 {
+    [Authorize]
     public class ReportsController : BaseApiController
     {
         private readonly IReportingService _reportingService;

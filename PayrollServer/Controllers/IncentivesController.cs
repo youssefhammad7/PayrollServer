@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PayrollServer.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class IncentivesController : BaseApiController
     {
         private readonly IIncentiveService _incentiveService;

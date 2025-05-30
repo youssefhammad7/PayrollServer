@@ -30,6 +30,10 @@ namespace PayrollServer.Infrastructure.Data.Seeds
                 // Seed default admin user
                 await DefaultAdminSeeder.SeedDefaultAdminAsync(serviceProvider);
                 logger.LogInformation("Default admin user seeded successfully.");
+
+                // Seed job grades
+                await JobGradeSeeder.SeedJobGradesAsync(serviceProvider);
+                logger.LogInformation("Job grades seeded successfully.");
             }
             catch (Exception ex)
             {
