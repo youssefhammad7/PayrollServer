@@ -7,6 +7,9 @@ import { MainLayout } from './components/layout/MainLayout';
 import { LoginPage } from './pages/LoginPage';
 import { Dashboard } from './pages/Dashboard';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { EmployeeList } from './pages/EmployeeList';
+import { EmployeeDetail } from './pages/EmployeeDetail';
+import { EmployeeForm } from './components/forms/EmployeeForm';
 
 // Debug component to help identify issues
 const DebugApp = () => {
@@ -134,12 +137,21 @@ function App() {
                 />
                 
                 {/* Employee routes - HR Clerk can add, everyone can view */}
-                <Route path="employees" element={<div>Employee List (Coming Soon)</div>} />
+                <Route path="employees" element={<EmployeeList />} />
+                <Route path="employees/:id" element={<EmployeeDetail />} />
                 <Route
                   path="employees/create"
                   element={
                     <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
-                      <div>Add Employee (Coming Soon)</div>
+                      <EmployeeForm mode="create" />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="employees/:id/edit"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
+                      <EmployeeForm mode="edit" />
                     </ProtectedRoute>
                   }
                 />
