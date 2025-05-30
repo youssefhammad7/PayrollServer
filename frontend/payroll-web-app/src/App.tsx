@@ -24,6 +24,7 @@ import { ServiceBracketForm } from './components/forms/ServiceBracketForm';
 import { AbsenceThresholdList } from './pages/AbsenceThresholdList';
 import { AbsenceThresholdDetail } from './pages/AbsenceThresholdDetail';
 import { AbsenceThresholdForm } from './components/forms/AbsenceThresholdForm';
+import { PayrollCalculation } from './pages/PayrollCalculation';
 
 // Debug component to help identify issues
 const DebugApp = () => {
@@ -233,7 +234,7 @@ function App() {
                   path="payroll/calculate"
                   element={
                     <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
-                      <div>Payroll Calculation (Coming Soon)</div>
+                      <PayrollCalculation />
                     </ProtectedRoute>
                   }
                 />
