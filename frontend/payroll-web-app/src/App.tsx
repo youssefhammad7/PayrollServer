@@ -18,6 +18,9 @@ import { DepartmentIncentiveHistoryPage } from './pages/DepartmentIncentiveHisto
 import { JobGradeList } from './pages/JobGradeList';
 import { JobGradeDetail } from './pages/JobGradeDetail';
 import { JobGradeForm } from './components/forms/JobGradeForm';
+import { ServiceBracketList } from './pages/ServiceBracketList';
+import { ServiceBracketDetail } from './pages/ServiceBracketDetail';
+import { ServiceBracketForm } from './components/forms/ServiceBracketForm';
 
 // Debug component to help identify issues
 const DebugApp = () => {
@@ -146,8 +149,32 @@ function App() {
                 <Route
                   path="service-brackets"
                   element={
-                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
-                      <div>Service Brackets Management (Coming Soon)</div>
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk', 'Read-Only']}>
+                      <ServiceBracketList />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="service-brackets/create"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin']}>
+                      <ServiceBracketForm mode="create" />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="service-brackets/:id"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk', 'Read-Only']}>
+                      <ServiceBracketDetail />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="service-brackets/:id/edit"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin']}>
+                      <ServiceBracketForm mode="edit" />
                     </ProtectedRoute>
                   }
                 />
