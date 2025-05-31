@@ -199,5 +199,19 @@ namespace PayrollServer.Infrastructure.Repositories
                 .Take(count)
                 .ToListAsync();
         }
+
+        public async Task<int> GetEmployeeCountByDepartmentAsync(int departmentId)
+        {
+            return await _context.Employees
+                .Where(e => e.DepartmentId == departmentId && !e.IsDeleted)
+                .CountAsync();
+        }
+
+        public async Task<int> GetEmployeeCountByJobGradeAsync(int jobGradeId)
+        {
+            return await _context.Employees
+                .Where(e => e.JobGradeId == jobGradeId && !e.IsDeleted)
+                .CountAsync();
+        }
     }
 } 

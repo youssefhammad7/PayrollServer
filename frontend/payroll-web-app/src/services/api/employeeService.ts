@@ -76,7 +76,7 @@ class EmployeeService {
   }
 
   // Update existing employee
-  async updateEmployee(id: string, employeeData: CreateEmployeeRequest): Promise<Employee> {
+  async updateEmployee(id: string, employeeData: UpdateEmployeeRequest): Promise<Employee> {
     try {
       const response = await apiClient.put<ApiResponse<Employee>>(`/employees/${id}`, employeeData);
 

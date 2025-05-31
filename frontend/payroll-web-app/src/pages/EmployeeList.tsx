@@ -117,7 +117,7 @@ export const EmployeeList: React.FC = () => {
   // Define grid columns
   const columns: GridColDef<Employee>[] = [
     {
-      field: 'id',
+      field: 'employeeNumber',
       headerName: 'Employee ID',
       width: 120,
       sortable: true,
@@ -151,13 +151,22 @@ export const EmployeeList: React.FC = () => {
       headerName: 'Hire Date',
       width: 120,
       sortable: true,
-      valueFormatter: (params: any) => {
+      renderCell: (params) => {
+        console.log('renderCell - Hire date params:', params);
         const date = params.value;
-        if (!date || date === '0001-01-01T00:00:00') return 'Not set';
+        console.log('renderCell - date value:', date, 'type:', typeof date);
+        
+        // For debugging, show both raw and formatted
+        if (!date) return 'Not set (no value)';
+        if (date === '0001-01-01T00:00:00' || date === '0001-01-01T00:00:00.000Z') {
+          return 'Not set (default)';
+        }
+        
         try {
-          return new Date(date).toLocaleDateString();
+          const formatted = new Date(date).toLocaleDateString();
+          return `${formatted} (${date})`;
         } catch {
-          return 'Invalid date';
+          return `Invalid (${date})`;
         }
       },
     },
@@ -246,6 +255,31 @@ export const EmployeeList: React.FC = () => {
       deleteMutation.mutate(deleteDialog.employee.id.toString());
     }
   };
+
+  // Process employee data to ensure employeeNumber is always available
+  const processedEmployees = React.useMemo(() => {
+    if (!employeesData?.items) return [];
+    
+    console.log('Raw employees data:', employeesData.items);
+    
+    const processed = employeesData.items.map(employee => {
+      const processedEmployee = {
+        ...employee,
+        employeeNumber: employee.employeeNumber || `EMP${employee.id.toString().padStart(4, '0')}`,
+      };
+      
+      console.log(`Employee ${employee.firstName} ${employee.lastName}:`, {
+        originalHiringDate: employee.hiringDate,
+        processedHiringDate: processedEmployee.hiringDate,
+        employeeNumber: processedEmployee.employeeNumber
+      });
+      
+      return processedEmployee;
+    });
+    
+    console.log('Processed employees:', processed);
+    return processed;
+  }, [employeesData?.items]);
 
   if (employeesError) {
     return (
@@ -352,7 +386,7 @@ export const EmployeeList: React.FC = () => {
       {/* Data Grid */}
       <Paper sx={{ height: 600, width: '100%' }}>
         <DataGrid
-          rows={employeesData?.items || []}
+          rows={processedEmployees}
           columns={columns}
           rowCount={employeesData?.totalCount || 0}
           loading={employeesLoading || isPlaceholderData}

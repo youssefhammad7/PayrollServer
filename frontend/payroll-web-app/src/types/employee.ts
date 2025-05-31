@@ -2,7 +2,7 @@
 
 export interface Employee {
   id: number;                    // Primary key (integer)
-  employeeNumber?: string;       // The display employee ID (may be missing from DTO)
+  employeeNumber?: string;       // The display employee ID from backend EmployeeNumber
   firstName: string;
   lastName: string;
   fullName?: string;             // Computed property from backend
@@ -10,7 +10,7 @@ export interface Employee {
   phoneNumber?: string;
   address?: string;
   dateOfBirth: string;          // ISO date string
-  hiringDate: string;           // Required - ISO date string
+  hiringDate: string;           // Required - ISO date string (maps to backend HiringDate)
   employmentStatus: string;     // Required - Active/Inactive etc  
   departmentId: number;
   departmentName?: string;
@@ -39,8 +39,16 @@ export interface CreateEmployeeRequest {
   initialSalary?: number;        // Optional initial salary
 }
 
-export interface UpdateEmployeeRequest extends CreateEmployeeRequest {
-  id: string;
+export interface UpdateEmployeeRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber?: string;
+  address?: string;
+  dateOfBirth: string;           // Will be converted to DateTime by backend
+  departmentId: number;
+  jobGradeId: number;
+  employmentStatus: string;      // Status can be updated but not employeeId or hireDate
 }
 
 export interface EmployeesResponse {

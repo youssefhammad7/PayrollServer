@@ -24,7 +24,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { Save, Cancel, ArrowBack } from '@mui/icons-material';
 import { employeeService } from '../../services/api/employeeService';
-import type { Employee, CreateEmployeeRequest } from '../../types/employee';
+import type { Employee, CreateEmployeeRequest, UpdateEmployeeRequest } from '../../types/employee';
 
 // Validation schema
 const employeeSchema = z.object({
@@ -96,18 +96,12 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ mode }) => {
   const { data: departments = [], isLoading: departmentsLoading } = useQuery({
     queryKey: ['departments'],
     queryFn: () => employeeService.getDepartments(),
-    onSuccess: (data) => {
-      console.log('Departments loaded:', data);
-    }
   });
 
   // Fetch job grades for dropdown
   const { data: jobGrades = [], isLoading: jobGradesLoading } = useQuery({
     queryKey: ['jobGrades'],
     queryFn: () => employeeService.getJobGrades(),
-    onSuccess: (data) => {
-      console.log('Job grades loaded:', data);
-    }
   });
 
   // Create mutation
@@ -121,7 +115,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ mode }) => {
 
   // Update mutation
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: CreateEmployeeRequest }) => 
+    mutationFn: ({ id, data }: { id: string; data: UpdateEmployeeRequest }) => 
       employeeService.updateEmployee(id, data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['employees'] });
@@ -150,24 +144,36 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ mode }) => {
   }, [employee, mode, reset]);
 
   const onSubmit = (data: EmployeeFormData) => {
-    const requestData: CreateEmployeeRequest = {
-      employeeId: data.employeeId,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      phoneNumber: data.phoneNumber || undefined,
-      address: data.address || undefined,
-      dateOfBirth: data.dateOfBirth,
-      hireDate: data.hireDate,
-      departmentId: parseInt(data.departmentId, 10),
-      jobGradeId: parseInt(data.jobGradeId, 10),
-    };
-
-    console.log('Form submission data:', requestData);
+    console.log('Form submission data:', data);
 
     if (mode === 'create') {
+      const requestData: CreateEmployeeRequest = {
+        employeeId: data.employeeId,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phoneNumber: data.phoneNumber || undefined,
+        address: data.address || undefined,
+        dateOfBirth: data.dateOfBirth,
+        hireDate: data.hireDate,
+        departmentId: parseInt(data.departmentId, 10),
+        jobGradeId: parseInt(data.jobGradeId, 10),
+      };
+      console.log('Create request data:', requestData);
       createMutation.mutate(requestData);
     } else {
+      const requestData: UpdateEmployeeRequest = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phoneNumber: data.phoneNumber || undefined,
+        address: data.address || undefined,
+        dateOfBirth: data.dateOfBirth,
+        departmentId: parseInt(data.departmentId, 10),
+        jobGradeId: parseInt(data.jobGradeId, 10),
+        employmentStatus: employee?.employmentStatus || 'Active', // Use existing status or default
+      };
+      console.log('Update request data:', requestData);
       updateMutation.mutate({ id: employeeId!, data: requestData });
     }
   };
@@ -274,8 +280,12 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ mode }) => {
                       label="Employee ID"
                       fullWidth
                       required
+                      disabled={mode === 'edit'}
                       error={!!errors.employeeId}
-                      helperText={errors.employeeId?.message}
+                      helperText={mode === 'edit' 
+                        ? 'Employee ID cannot be changed after creation' 
+                        : errors.employeeId?.message
+                      }
                     />
                   )}
                 />
@@ -404,9 +414,13 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ mode }) => {
                       type="date"
                       fullWidth
                       required
+                      disabled={mode === 'edit'}
                       InputLabelProps={{ shrink: true }}
                       error={!!errors.hireDate}
-                      helperText={errors.hireDate?.message}
+                      helperText={mode === 'edit' 
+                        ? 'Hire date cannot be changed after creation' 
+                        : errors.hireDate?.message
+                      }
                     />
                   )}
                 />
