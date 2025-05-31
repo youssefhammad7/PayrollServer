@@ -42,6 +42,11 @@ import { SalaryReports } from './pages/SalaryReports';
 import { IncentivesReports } from './pages/IncentivesReports';
 import { EmployeeDirectory } from './pages/EmployeeDirectory';
 
+// User Management components
+import { UserList } from './pages/UserList';
+import { UserForm } from './components/forms/UserForm';
+import { UserProfilePage } from './pages/UserProfile';
+
 // Debug component to help identify issues
 const DebugApp = () => {
   console.log('DebugApp - Rendering...');
@@ -103,7 +108,23 @@ function App() {
                     path="users"
                     element={
                       <ProtectedRoute adminOnly>
-                        <div>Users Management (Coming Soon)</div>
+                        <UserList />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="users/create"
+                    element={
+                      <ProtectedRoute adminOnly>
+                        <UserForm mode="create" />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="users/:id/edit"
+                    element={
+                      <ProtectedRoute adminOnly>
+                        <UserForm mode="edit" />
                       </ProtectedRoute>
                     }
                   />
@@ -383,7 +404,7 @@ function App() {
                   
                   {/* Settings and Profile - Available to all authenticated users */}
                   <Route path="settings" element={<div>Settings (Coming Soon)</div>} />
-                  <Route path="profile" element={<div>Profile (Coming Soon)</div>} />
+                  <Route path="profile" element={<UserProfilePage />} />
                   
                   {/* Department routes - HR Clerk can add, everyone can view */}
                   <Route
