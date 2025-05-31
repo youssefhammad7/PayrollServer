@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useSnackbar } from 'notistack';
 import {
   Box,
   Typography,
@@ -47,6 +48,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 export const EmployeeDirectory: React.FC = () => {
   const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
   
   const [selectedDepartment, setSelectedDepartment] = useState<number | ''>('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -105,25 +107,31 @@ export const EmployeeDirectory: React.FC = () => {
   // Handle export functions
   const handleExportCsv = async () => {
     try {
+      enqueueSnackbar('Preparing CSV export...', { variant: 'info' });
       const blob = await reportService.exportToCsv(ReportType.EMPLOYEE_DIRECTORY, {
         departmentId: selectedDepartment || undefined,
       });
       const filename = reportService.generateFilename(ReportType.EMPLOYEE_DIRECTORY, 'csv');
       reportService.downloadFile(blob, filename);
+      enqueueSnackbar('CSV export completed successfully!', { variant: 'success' });
     } catch (error) {
       console.error('Error exporting to CSV:', error);
+      enqueueSnackbar('Failed to export CSV. Please try again.', { variant: 'error' });
     }
   };
 
   const handleExportPdf = async () => {
     try {
+      enqueueSnackbar('Generating PDF report...', { variant: 'info' });
       const blob = await reportService.exportToPdf(ReportType.EMPLOYEE_DIRECTORY, {
         departmentId: selectedDepartment || undefined,
       });
       const filename = reportService.generateFilename(ReportType.EMPLOYEE_DIRECTORY, 'pdf');
       reportService.downloadFile(blob, filename);
+      enqueueSnackbar('PDF export completed successfully!', { variant: 'success' });
     } catch (error) {
       console.error('Error exporting to PDF:', error);
+      enqueueSnackbar('Failed to generate PDF report. Please try again.', { variant: 'error' });
     }
   };
 

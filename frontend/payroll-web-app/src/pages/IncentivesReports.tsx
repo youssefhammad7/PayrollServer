@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useSnackbar } from 'notistack';
 import {
   Box,
   Typography,
@@ -69,6 +70,7 @@ function TabPanel(props: TabPanelProps) {
 
 export const IncentivesReports: React.FC = () => {
   const { isAdmin, isHRClerk } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
   
   // Check authorization
   if (!isAdmin() && !isHRClerk()) {
@@ -186,6 +188,7 @@ export const IncentivesReports: React.FC = () => {
   // Handle export functions
   const handleExportCsv = async () => {
     try {
+      enqueueSnackbar('Preparing CSV export...', { variant: 'info' });
       const blob = await reportService.exportToCsv(ReportType.INCENTIVES, {
         year: selectedYear,
         month: selectedMonth,
@@ -196,13 +199,16 @@ export const IncentivesReports: React.FC = () => {
         month: selectedMonth,
       });
       reportService.downloadFile(blob, filename);
+      enqueueSnackbar('CSV export completed successfully!', { variant: 'success' });
     } catch (error) {
       console.error('Error exporting to CSV:', error);
+      enqueueSnackbar('Failed to export CSV. Please try again.', { variant: 'error' });
     }
   };
 
   const handleExportPdf = async () => {
     try {
+      enqueueSnackbar('Generating PDF report...', { variant: 'info' });
       const blob = await reportService.exportToPdf(ReportType.INCENTIVES, {
         year: selectedYear,
         month: selectedMonth,
@@ -213,8 +219,10 @@ export const IncentivesReports: React.FC = () => {
         month: selectedMonth,
       });
       reportService.downloadFile(blob, filename);
+      enqueueSnackbar('PDF export completed successfully!', { variant: 'success' });
     } catch (error) {
       console.error('Error exporting to PDF:', error);
+      enqueueSnackbar('Failed to generate PDF report. Please try again.', { variant: 'error' });
     }
   };
 

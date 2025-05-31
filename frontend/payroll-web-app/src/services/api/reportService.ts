@@ -79,18 +79,36 @@ class ReportService {
 
   // Export report to PDF
   async exportToPdf(reportType: ReportType, params: ReportParams = {}): Promise<Blob> {
-    const queryParams: Record<string, string> = {};
-    
-    if (params.year) queryParams.year = params.year.toString();
-    if (params.month) queryParams.month = params.month.toString();
-    if (params.departmentId) queryParams.departmentId = params.departmentId.toString();
+    try {
+      const queryParams: Record<string, string> = {};
+      
+      if (params.year) queryParams.year = params.year.toString();
+      if (params.month) queryParams.month = params.month.toString();
+      if (params.departmentId) queryParams.departmentId = params.departmentId.toString();
 
-    const response = await apiClient.get(`/reports/export/pdf/${reportType}`, {
-      params: queryParams,
-      responseType: 'blob'
-    });
+      console.log('Requesting PDF export:', { reportType, queryParams });
 
-    return new Blob([response.data], { type: 'application/pdf' });
+      const response = await apiClient.get(`/reports/export/pdf/${reportType}`, {
+        params: queryParams,
+        responseType: 'blob'
+      });
+
+      console.log('PDF export response:', {
+        status: response.status,
+        contentType: response.headers['content-type'],
+        size: response.data.size
+      });
+
+      // Validate that we received a proper PDF blob
+      if (response.data.size === 0) {
+        throw new Error('Received empty PDF response');
+      }
+
+      return new Blob([response.data], { type: 'application/pdf' });
+    } catch (error) {
+      console.error('Error exporting to PDF:', error);
+      throw error;
+    }
   }
 
   // Helper function to download a blob as a file
