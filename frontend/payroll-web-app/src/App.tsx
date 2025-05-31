@@ -35,6 +35,13 @@ import { AbsenceRecordForm } from './pages/AbsenceRecordForm';
 import { AbsenceRecordDetail } from './pages/AbsenceRecordDetail';
 import { ComingSoon } from './components/ComingSoon';
 
+// Report components
+import { ReportsDashboard } from './pages/ReportsDashboard';
+import { AttendanceReports } from './pages/AttendanceReports';
+import { SalaryReports } from './pages/SalaryReports';
+import { IncentivesReports } from './pages/IncentivesReports';
+import { EmployeeDirectory } from './pages/EmployeeDirectory';
+
 // Debug component to help identify issues
 const DebugApp = () => {
   console.log('DebugApp - Rendering...');
@@ -339,12 +346,40 @@ function App() {
                     }
                   />
                   
-                  {/* Reports - Available to all authenticated users */}
-                  <Route path="reports" element={<div>Reports Dashboard (Coming Soon)</div>} />
-                  <Route path="reports/attendance" element={<div>Attendance Reports (Coming Soon)</div>} />
-                  <Route path="reports/salary" element={<div>Salary Reports (Coming Soon)</div>} />
-                  <Route path="reports/incentives" element={<div>Incentives Reports (Coming Soon)</div>} />
-                  <Route path="reports/directory" element={<div>Employee Directory (Coming Soon)</div>} />
+                  {/* Reports - Available to all authenticated users with role-based access */}
+                  <Route path="reports" element={<ReportsDashboard />} />
+                  <Route 
+                    path="reports/attendance" 
+                    element={
+                      <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
+                        <AttendanceReports />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="reports/salary" 
+                    element={
+                      <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
+                        <SalaryReports />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="reports/incentives" 
+                    element={
+                      <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
+                        <IncentivesReports />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="reports/directory" 
+                    element={
+                      <ProtectedRoute requiredRoles={['Admin', 'HR Clerk', 'Read-Only']}>
+                        <EmployeeDirectory />
+                      </ProtectedRoute>
+                    } 
+                  />
                   
                   {/* Settings and Profile - Available to all authenticated users */}
                   <Route path="settings" element={<div>Settings (Coming Soon)</div>} />
