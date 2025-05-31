@@ -189,5 +189,15 @@ namespace PayrollServer.Infrastructure.Repositories
 
             return await query.CountAsync();
         }
+
+        public async Task<IEnumerable<Employee>> GetRecentEmployeesWithDetailsAsync(int count)
+        {
+            return await _context.Employees
+                .Include(e => e.Department)
+                .Include(e => e.JobGrade)
+                .OrderByDescending(e => e.CreatedAt)
+                .Take(count)
+                .ToListAsync();
+        }
     }
 } 

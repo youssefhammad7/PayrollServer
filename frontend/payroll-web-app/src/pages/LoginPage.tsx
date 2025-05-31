@@ -171,18 +171,7 @@ export const LoginPage: React.FC = () => {
             <Typography variant="body2" sx={{ mt: 1 }}>
               <strong>Admin:</strong> admin@payrollsystem.com / Admin@123456
             </Typography>
-            <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 2 }}>
-              Mock Fallback Credentials:
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>
-              <strong>Admin:</strong> admin@payroll.com / admin123
-            </Typography>
-            <Typography variant="body2">
-              <strong>HR Clerk:</strong> hr@payroll.com / hr123
-            </Typography>
-            <Typography variant="body2">
-              <strong>Read-Only:</strong> user@payroll.com / user123
-            </Typography>
+            
           </Box>
         </CardContent>
       </Card>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -14,6 +14,7 @@ import {
   Alert,
   CircularProgress,
   alpha,
+  Skeleton,
 } from '@mui/material';
 import {
   People,
@@ -26,16 +27,71 @@ import {
   CheckCircle,
   Warning,
   Security,
+  Refresh,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { authService } from '../services/auth/authService';
+import { dashboardService } from '../services/api/dashboardService';
+import { useQuery } from '@tanstack/react-query';
+
+// Define types locally to avoid import issues
+interface StatisticData {
+  title: string;
+  value: string;
+  change: string;
+  icon: string;
+}
+
+interface DashboardStatistics {
+  totalEmployees: StatisticData;
+  totalDepartments: StatisticData;
+  monthlyPayroll: StatisticData;
+  reportsGenerated: StatisticData;
+}
+
+interface RecentActivity {
+  title: string;
+  description: string;
+  time: string;
+  status: string;
+  icon: string;
+  type: string;
+}
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAdmin, isHRClerk } = useAuth();
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [isTestingJWT, setIsTestingJWT] = useState(false);
+
+  // Fetch dashboard statistics
+  const { 
+    data: statistics, 
+    isLoading: statsLoading, 
+    error: statsError,
+    refetch: refetchStats 
+  } = useQuery({
+    queryKey: ['dashboard-statistics'],
+    queryFn: dashboardService.getStatistics,
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+    retry: 3,
+    retryDelay: 1000,
+  });
+
+  // Fetch recent activities
+  const { 
+    data: activities, 
+    isLoading: activitiesLoading, 
+    error: activitiesError,
+    refetch: refetchActivities 
+  } = useQuery({
+    queryKey: ['dashboard-recent-activities'],
+    queryFn: () => dashboardService.getRecentActivities(10),
+    refetchInterval: 2 * 60 * 1000, // Refetch every 2 minutes
+    retry: 3,
+    retryDelay: 1000,
+  });
 
   const handleTestJWT = async () => {
     setIsTestingJWT(true);
@@ -54,36 +110,181 @@ export const Dashboard: React.FC = () => {
     }
   };
 
-  const stats = [
-    {
-      title: 'Total Employees',
-      value: '156',
-      icon: <People />,
-      color: '#1E88E5',
-      change: '+12 this month',
-    },
-    {
-      title: 'Departments',
-      value: '8',
-      icon: <Business />,
-      color: '#FB8C00',
-      change: 'No changes',
-    },
-    {
-      title: 'Monthly Payroll',
-      value: '$2.4M',
-      icon: <AccountBalance />,
-      color: '#43A047',
-      change: '+5.2% from last month',
-    },
-    {
-      title: 'Reports Generated',
-      value: '23',
-      icon: <Assessment />,
-      color: '#29B6F6',
-      change: '8 this week',
-    },
-  ];
+  const handleRefreshData = () => {
+    refetchStats();
+    refetchActivities();
+  };
+
+  // Convert API data to display format
+  const getStatsForDisplay = (stats: DashboardStatistics | undefined) => {
+    if (!stats) return [];
+
+    // Debug: Log the actual API response structure
+    console.log('Dashboard API Response:', stats);
+    console.log('API Response Keys:', Object.keys(stats));
+
+    // Check if we're getting the raw API response instead of extracted data
+    if ('isSuccess' in stats && 'data' in stats) {
+      console.log('Received raw API response, extracting data...');
+      const extractedStats = (stats as any).data;
+      console.log('Extracted statistics data:', extractedStats);
+      
+      // Use the extracted data
+      if (extractedStats && extractedStats.totalEmployees && extractedStats.totalDepartments && 
+          extractedStats.monthlyPayroll && extractedStats.reportsGenerated) {
+        return [
+          {
+            title: extractedStats.totalEmployees.title,
+            value: extractedStats.totalEmployees.value,
+            icon: <People />,
+            color: '#1E88E5',
+            change: extractedStats.totalEmployees.change,
+          },
+          {
+            title: extractedStats.totalDepartments.title,
+            value: extractedStats.totalDepartments.value,
+            icon: <Business />,
+            color: '#FB8C00',
+            change: extractedStats.totalDepartments.change,
+          },
+          {
+            title: extractedStats.monthlyPayroll.title,
+            value: extractedStats.monthlyPayroll.value,
+            icon: <AccountBalance />,
+            color: '#43A047',
+            change: extractedStats.monthlyPayroll.change,
+          },
+          {
+            title: extractedStats.reportsGenerated.title,
+            value: extractedStats.reportsGenerated.value,
+            icon: <Assessment />,
+            color: '#29B6F6',
+            change: extractedStats.reportsGenerated.change,
+          },
+        ];
+      }
+    }
+
+    // Check if we have the required data in the expected format
+    if (!stats.totalEmployees || !stats.totalDepartments || !stats.monthlyPayroll || !stats.reportsGenerated) {
+      console.error('API response missing expected properties:', {
+        hasTotalEmployees: !!stats.totalEmployees,
+        hasTotalDepartments: !!stats.totalDepartments,
+        hasMonthlyPayroll: !!stats.monthlyPayroll,
+        hasReportsGenerated: !!stats.reportsGenerated,
+        actualKeys: Object.keys(stats),
+        rawResponse: stats
+      });
+      
+      // Return empty array to prevent crashes
+      return [];
+    }
+
+    // Process normal extracted data
+    return [
+      {
+        title: stats.totalEmployees.title,
+        value: stats.totalEmployees.value,
+        icon: <People />,
+        color: '#1E88E5',
+        change: stats.totalEmployees.change,
+      },
+      {
+        title: stats.totalDepartments.title,
+        value: stats.totalDepartments.value,
+        icon: <Business />,
+        color: '#FB8C00',
+        change: stats.totalDepartments.change,
+      },
+      {
+        title: stats.monthlyPayroll.title,
+        value: stats.monthlyPayroll.value,
+        icon: <AccountBalance />,
+        color: '#43A047',
+        change: stats.monthlyPayroll.change,
+      },
+      {
+        title: stats.reportsGenerated.title,
+        value: stats.reportsGenerated.value,
+        icon: <Assessment />,
+        color: '#29B6F6',
+        change: stats.reportsGenerated.change,
+      },
+    ];
+  };
+
+  // Convert API activities to display format
+  const getActivitiesForDisplay = (apiActivities: RecentActivity[] | undefined) => {
+    // Debug logging
+    console.log('Activities data type:', typeof apiActivities);
+    console.log('Activities data:', apiActivities);
+    
+    // Check if activities is undefined or null
+    if (!apiActivities) {
+      console.log('Activities is undefined/null, returning empty array');
+      return [];
+    }
+
+    // Check if we're getting the raw API response instead of extracted data
+    if (typeof apiActivities === 'object' && 'isSuccess' in apiActivities && 'data' in apiActivities) {
+      console.log('Received raw API response for activities, extracting data...');
+      const extractedActivities = (apiActivities as any).data;
+      console.log('Extracted activities data:', extractedActivities);
+      
+      if (Array.isArray(extractedActivities)) {
+        return extractedActivities.map(activity => ({
+          title: activity.title,
+          description: activity.description,
+          time: activity.time,
+          status: activity.status,
+          icon: getIconForType(activity.icon, activity.status),
+          type: activity.type,
+        }));
+      }
+    }
+
+    // Check if activities is not an array
+    if (!Array.isArray(apiActivities)) {
+      console.error('Activities is not a valid array:', apiActivities);
+      return [];
+    }
+
+    // Activities is a valid array, process it normally
+    return apiActivities.map(activity => ({
+      title: activity.title,
+      description: activity.description,
+      time: activity.time,
+      status: activity.status,
+      icon: getIconForType(activity.icon, activity.status),
+      type: activity.type,
+    }));
+  };
+
+  const getIconForType = (iconType: string, status: string) => {
+    const colorMap = {
+      completed: 'success',
+      info: 'primary',
+      warning: 'warning',
+      error: 'error'
+    };
+
+    const color = colorMap[status as keyof typeof colorMap] || 'primary';
+
+    switch (iconType) {
+      case 'AccountBalance':
+        return <AccountBalance color={color as any} />;
+      case 'PersonAdd':
+        return <PersonAdd color={color as any} />;
+      case 'Schedule':
+        return <Schedule color={color as any} />;
+      case 'CheckCircle':
+        return <CheckCircle color={color as any} />;
+      case 'Warning':
+        return <Warning color={color as any} />;
+      default:
+        return <CheckCircle color={color as any} />;
+    }
+  };
 
   const quickActions = [
     {
@@ -120,40 +321,15 @@ export const Dashboard: React.FC = () => {
     },
   ];
 
-  const recentActivities = [
-    {
-      title: 'Payroll calculated for March 2024',
-      description: 'Monthly payroll processing completed',
-      time: '2 hours ago',
-      status: 'completed',
-      icon: <CheckCircle color="success" />,
-    },
-    {
-      title: 'New employee added: John Doe',
-      description: 'Software Engineer, Engineering Department',
-      time: '1 day ago',
-      status: 'info',
-      icon: <PersonAdd color="primary" />,
-    },
-    {
-      title: 'Attendance report generated',
-      description: 'Monthly attendance summary for all departments',
-      time: '2 days ago',
-      status: 'completed',
-      icon: <Schedule color="info" />,
-    },
-    {
-      title: 'Pending salary approvals',
-      description: '3 salary adjustments waiting for approval',
-      time: '3 days ago',
-      status: 'warning',
-      icon: <Warning color="warning" />,
-    },
-  ];
-
   const hasAccess = (roles: string[]) => {
     return roles.some(role => user?.roles.includes(role));
   };
+
+  const stats = getStatsForDisplay(statistics);
+  const recentActivities = getActivitiesForDisplay(activities);
+
+  // Show loading skeleton for first load
+  const isFirstLoad = statsLoading && !statistics;
 
   return (
     <Box>
@@ -191,102 +367,47 @@ export const Dashboard: React.FC = () => {
           <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, mb: 1 }}>
             Welcome back, {user?.firstName}! 👋
           </Typography>
-          <Typography variant="body1" sx={{ opacity: 0.9, fontSize: '1.1rem' }}>
-            Here's what's happening with your payroll system today.
-          </Typography>
+        
           <Box sx={{ 
-            mt: 3, 
             display: 'flex', 
             alignItems: 'center', 
             gap: 2,
             flexWrap: 'wrap' 
           }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Box sx={{
-                width: 12,
-                height: 12,
-                borderRadius: '50%',
-                bgcolor: '#4CAF50',
-                animation: 'pulse 2s infinite',
-                '@keyframes pulse': {
-                  '0%, 100%': { opacity: 1, transform: 'scale(1)' },
-                  '50%': { opacity: 0.7, transform: 'scale(1.1)' },
-                },
-              }} />
-              <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                System Online
-              </Typography>
-            </Box>
-            <Typography variant="body2" sx={{ opacity: 0.8 }}>
-              • Last sync: {new Date().toLocaleTimeString()}
-            </Typography>
+           
           </Box>
         </Box>
       </Box>
 
-      {/* JWT Test Section */}
-      <Box sx={{ mb: 4 }}>
-        <Card sx={{ 
-          overflow: 'hidden',
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.9) 100%)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(30,136,229,0.1)',
-        }}>
-          <CardContent sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <Avatar sx={{ 
-                bgcolor: 'primary.main', 
-                boxShadow: '0 4px 12px rgba(30,136,229,0.3)',
-              }}>
-                <Security />
-              </Avatar>
-              <Box>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  API Authentication Test
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Verify your JWT token integration
-                </Typography>
-              </Box>
-            </Box>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Test if your JWT token is properly included in API requests.
-            </Typography>
-            <Button
-              variant="contained"
-              onClick={handleTestJWT}
-              disabled={isTestingJWT}
-              startIcon={isTestingJWT ? <CircularProgress size={20} /> : <Security />}
-              sx={{
-                background: 'linear-gradient(135deg, #1E88E5 0%, #1976D2 100%)',
-                boxShadow: '0 4px 12px rgba(30,136,229,0.3)',
-                '&:hover': {
-                  boxShadow: '0 6px 16px rgba(30,136,229,0.4)',
-                  transform: 'translateY(-2px)',
-                },
-              }}
-            >
-              {isTestingJWT ? 'Testing...' : 'Test JWT Authentication'}
+      {/* Error Alerts */}
+      {statsError && (
+        <Alert 
+          severity="error" 
+          sx={{ mb: 4 }}
+          action={
+            <Button color="inherit" size="small" onClick={() => refetchStats()}>
+              Retry
             </Button>
-            
-            {/* JWT Test Result */}
-            {testResult && (
-              <Alert
-                severity={testResult.success ? 'success' : 'error'}
-                variant="filled"
-                sx={{ 
-                  mt: 3,
-                  borderRadius: 2,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                }}
-              >
-                {testResult.message}
-              </Alert>
-            )}
-          </CardContent>
-        </Card>
-      </Box>
+          }
+        >
+          Failed to load dashboard statistics. Please check your backend connection.
+        </Alert>
+      )}
 
+      {activitiesError && (
+        <Alert 
+          severity="warning" 
+          sx={{ mb: 4 }}
+          action={
+            <Button color="inherit" size="small" onClick={() => refetchActivities()}>
+              Retry
+            </Button>
+          }
+        >
+          Failed to load recent activities.
+        </Alert>
+      )}
+      
       {/* Statistics Cards */}
       <Box
         sx={{
@@ -300,93 +421,111 @@ export const Dashboard: React.FC = () => {
           mb: 4,
         }}
       >
-        {stats.map((stat, index) => (
-          <Card 
-            key={index}
-            sx={{
-              position: 'relative',
-              overflow: 'hidden',
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.9) 100%)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(30,136,229,0.1)',
-              transition: 'all 0.3s ease-in-out',
-              '&:hover': {
-                transform: 'translateY(-8px)',
-                boxShadow: '0 12px 24px rgba(30,136,229,0.15)',
-                border: '1px solid rgba(30,136,229,0.2)',
-              },
-              '&::before': {
-                content: '""',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 4,
-                background: `linear-gradient(90deg, ${stat.color}, ${stat.color}dd)`,
-              },
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-                <Avatar 
-                  sx={{ 
-                    bgcolor: stat.color, 
-                    mr: 2,
-                    width: 56,
-                    height: 56,
-                    boxShadow: `0 8px 16px ${stat.color}40`,
-                    '& .MuiSvgIcon-root': {
-                      fontSize: '1.8rem',
-                    },
-                  }}
-                >
-                  {stat.icon}
-                </Avatar>
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography 
-                    variant="h4" 
+        {isFirstLoad ? (
+          // Loading skeleton
+          Array.from({ length: 4 }).map((_, index) => (
+            <Card key={index}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                  <Skeleton variant="circular" width={56} height={56} />
+                  <Box sx={{ flex: 1 }}>
+                    <Skeleton variant="text" width="60%" height={32} />
+                    <Skeleton variant="text" width="40%" height={20} />
+                  </Box>
+                </Box>
+                <Skeleton variant="rectangular" height={40} sx={{ borderRadius: 1 }} />
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          stats.map((stat, index) => (
+            <Card 
+              key={index}
+              sx={{
+                position: 'relative',
+                overflow: 'hidden',
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.9) 100%)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(30,136,229,0.1)',
+                transition: 'all 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-8px)',
+                  boxShadow: '0 12px 24px rgba(30,136,229,0.15)',
+                  border: '1px solid rgba(30,136,229,0.2)',
+                },
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: 4,
+                  background: `linear-gradient(90deg, ${stat.color}, ${stat.color}dd)`,
+                },
+              }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+                  <Avatar 
                     sx={{ 
-                      fontWeight: 700, 
-                      mb: 0.5,
-                      background: `linear-gradient(135deg, ${stat.color} 0%, ${stat.color}cc 100%)`,
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
+                      bgcolor: stat.color, 
+                      mr: 2,
+                      width: 56,
+                      height: 56,
+                      boxShadow: `0 8px 16px ${stat.color}40`,
+                      '& .MuiSvgIcon-root': {
+                        fontSize: '1.8rem',
+                      },
                     }}
                   >
-                    {stat.value}
-                  </Typography>
+                    {stat.icon}
+                  </Avatar>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography 
+                      variant="h4" 
+                      sx={{ 
+                        fontWeight: 700, 
+                        mb: 0.5,
+                        background: `linear-gradient(135deg, ${stat.color} 0%, ${stat.color}cc 100%)`,
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                      }}
+                    >
+                      {stat.value}
+                    </Typography>
+                    <Typography 
+                      variant="body2" 
+                      color="text.secondary"
+                      sx={{ fontWeight: 500, lineHeight: 1.2 }}
+                    >
+                      {stat.title}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box sx={{ 
+                  p: 2, 
+                  borderRadius: 2, 
+                  bgcolor: alpha(stat.color, 0.08),
+                  border: `1px solid ${alpha(stat.color, 0.2)}`,
+                }}>
                   <Typography 
-                    variant="body2" 
-                    color="text.secondary"
-                    sx={{ fontWeight: 500, lineHeight: 1.2 }}
+                    variant="caption" 
+                    sx={{ 
+                      color: stat.color,
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                    }}
                   >
-                    {stat.title}
+                    📈 {stat.change}
                   </Typography>
                 </Box>
-              </Box>
-              <Box sx={{ 
-                p: 2, 
-                borderRadius: 2, 
-                bgcolor: alpha(stat.color, 0.08),
-                border: `1px solid ${alpha(stat.color, 0.2)}`,
-              }}>
-                <Typography 
-                  variant="caption" 
-                  sx={{ 
-                    color: stat.color,
-                    fontWeight: 600,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                  }}
-                >
-                  📈 {stat.change}
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          ))
+        )}
       </Box>
 
       <Box
@@ -446,47 +585,70 @@ export const Dashboard: React.FC = () => {
             <Typography variant="h6" gutterBottom>
               Recent Activity
             </Typography>
-            <List>
-              {recentActivities.map((activity, index) => (
-                <ListItem key={index} sx={{ px: 0 }}>
-                  <ListItemIcon>
-                    {activity.icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2" fontWeight="bold">
-                          {activity.title}
-                        </Typography>
-                        <Chip
-                          label={activity.status}
-                          size="small"
-                          color={
-                            activity.status === 'completed'
-                              ? 'success'
-                              : activity.status === 'warning'
-                              ? 'warning'
-                              : 'default'
-                          }
-                          variant="outlined"
-                        />
-                      </Box>
-                    }
-                    secondary={
-                      <Box>
-                        <Typography variant="caption" color="text.secondary">
-                          {activity.description}
-                        </Typography>
-                        <br />
-                        <Typography variant="caption" color="text.secondary">
-                          {activity.time}
-                        </Typography>
-                      </Box>
-                    }
-                  />
-                </ListItem>
-              ))}
-            </List>
+            {activitiesLoading && !activities ? (
+              <Box sx={{ p: 2 }}>
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                    <Skeleton variant="circular" width={40} height={40} />
+                    <Box sx={{ flex: 1 }}>
+                      <Skeleton variant="text" width="80%" />
+                      <Skeleton variant="text" width="60%" />
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            ) : (
+              <List>
+                {recentActivities.length === 0 ? (
+                  <ListItem>
+                    <ListItemText
+                      primary="No recent activities"
+                      secondary="Activities will appear here when employees, payroll, or other records are created or updated in the backend."
+                    />
+                  </ListItem>
+                ) : (
+                  recentActivities.map((activity, index) => (
+                    <ListItem key={index} sx={{ px: 0 }}>
+                      <ListItemIcon>
+                        {activity.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Typography variant="body2" fontWeight="bold">
+                              {activity.title}
+                            </Typography>
+                            <Chip
+                              label={activity.status}
+                              size="small"
+                              color={
+                                activity.status === 'completed'
+                                  ? 'success'
+                                  : activity.status === 'warning'
+                                  ? 'warning'
+                                  : 'default'
+                              }
+                              variant="outlined"
+                            />
+                          </Box>
+                        }
+                        secondary={
+                          <Box>
+                            <Typography variant="caption" color="text.secondary">
+                              {activity.description}
+                            </Typography>
+                            <br />
+                            <Typography variant="caption" color="text.secondary">
+                              {activity.time}
+                            </Typography>
+                          </Box>
+                        }
+                      />
+                    </ListItem>
+                  ))
+                )}
+              </List>
+            )}
           </CardContent>
         </Card>
       </Box>
