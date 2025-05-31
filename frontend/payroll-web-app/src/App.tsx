@@ -28,6 +28,9 @@ import { PayrollCalculation } from './pages/PayrollCalculation';
 import { SalaryRecordList } from './pages/SalaryRecordList';
 import { SalaryRecordForm } from './pages/SalaryRecordForm';
 import { SalaryRecordDetail } from './pages/SalaryRecordDetail';
+import { AbsenceRecordList } from './pages/AbsenceRecordList';
+import { AbsenceRecordForm } from './pages/AbsenceRecordForm';
+import { AbsenceRecordDetail } from './pages/AbsenceRecordDetail';
 import { ComingSoon } from './components/ComingSoon';
 
 // Debug component to help identify issues
@@ -254,7 +257,7 @@ function App() {
                   path="absence-records"
                   element={
                     <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
-                      <ComingSoon message="Absence Records coming soon!" />
+                      <AbsenceRecordList />
                     </ProtectedRoute>
                   }
                 />
@@ -262,7 +265,7 @@ function App() {
                   path="absence-records/create"
                   element={
                     <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
-                      <ComingSoon message="Create Absence Record coming soon!" />
+                      <AbsenceRecordForm />
                     </ProtectedRoute>
                   }
                 />
@@ -270,7 +273,7 @@ function App() {
                   path="absence-records/:id"
                   element={
                     <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
-                      <ComingSoon message="Absence Record Details coming soon!" />
+                      <AbsenceRecordDetail />
                     </ProtectedRoute>
                   }
                 />
@@ -278,7 +281,7 @@ function App() {
                   path="absence-records/:id/edit"
                   element={
                     <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
-                      <ComingSoon message="Edit Absence Record coming soon!" />
+                      <AbsenceRecordForm />
                     </ProtectedRoute>
                   }
                 />
