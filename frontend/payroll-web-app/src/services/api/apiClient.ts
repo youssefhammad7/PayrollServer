@@ -1,12 +1,10 @@
 import axios from 'axios';
+import { API_CONFIG } from '../../../../payroll-shared/src/constants';
 
-// Base API configuration - Updated to match your backend
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5132/api';
-
-// Create axios instance
+// Create axios instance using centralized configuration
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
+  baseURL: API_CONFIG.BASE_URL,
+  timeout: API_CONFIG.TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
   },

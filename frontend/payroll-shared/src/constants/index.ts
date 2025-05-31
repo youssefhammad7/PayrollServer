@@ -1,6 +1,29 @@
+// Environment-aware API base URL getter
+const getApiBaseUrl = (): string => {
+  // Handle both browser and Node.js environments
+  const envUrl = typeof window !== 'undefined' 
+    ? import.meta.env?.VITE_API_BASE_URL 
+    : process.env.VITE_API_BASE_URL;
+  
+  const defaultUrl = 'https://localhost:7154/api';
+  
+  if (!envUrl) {
+    return defaultUrl;
+  }
+  
+  // Basic URL validation
+  try {
+    new URL(envUrl);
+    return envUrl;
+  } catch {
+    console.warn(`Invalid API base URL: ${envUrl}, falling back to default`);
+    return defaultUrl;
+  }
+};
+
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: process.env.VITE_API_BASE_URL || 'http://localhost:5132/api',
+  BASE_URL: getApiBaseUrl(),
   TIMEOUT: 10000,
 } as const;
 

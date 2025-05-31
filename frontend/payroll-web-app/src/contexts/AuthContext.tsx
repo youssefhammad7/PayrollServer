@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { authService, type LoginRequest, type User } from '../services/auth/authService';
+import { ENV_CONFIG } from '../config/environment';
 
 interface AuthContextType {
   user: User | null;
@@ -29,7 +30,7 @@ interface AuthProviderProps {
 }
 
 // Environment variable to control real vs mock authentication (default to real API)
-const USE_REAL_API = import.meta.env.VITE_USE_REAL_API !== 'false'; // defaults to true
+const USE_REAL_API = ENV_CONFIG.USE_REAL_API;
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);

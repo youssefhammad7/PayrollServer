@@ -55,7 +55,20 @@ npm run dev
 2. **Configure API endpoint:**
 Create a `.env.local` file in `payroll-web-app/`:
 ```env
-VITE_API_BASE_URL=https://localhost:7001/api
+VITE_API_BASE_URL=https://localhost:7154/api
+VITE_USE_REAL_API=true
+VITE_DEV_MODE=true
+```
+
+**Environment Variables:**
+- `VITE_API_BASE_URL`: Backend API base URL (default: https://localhost:7154/api)
+- `VITE_USE_REAL_API`: Set to 'false' for mock authentication during development
+- `VITE_DEV_MODE`: Enable development mode features
+
+**Quick Setup:**
+```bash
+cp env.example .env.local
+# Edit .env.local with your configuration
 ```
 
 ### Build for Production
@@ -83,7 +96,11 @@ npm run build
 
 ## API Integration
 
-The frontend connects to the .NET Core backend API running on `https://localhost:7001/api`.
+The frontend connects to the .NET Core backend API running on `https://localhost:7154/api`.
+
+All API calls are centralized through:
+- **Shared Constants**: `payroll-shared/src/constants/index.ts` - API configuration
+- **API Client**: `payroll-web-app/src/services/api/apiClient.ts` - Axios instance with interceptors
 
 ### Authentication Flow
 1. User submits login credentials

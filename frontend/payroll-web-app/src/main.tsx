@@ -4,6 +4,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import App from './App.tsx'
 import './index.css'
+import { logEnvironmentStatus } from './utils/envValidator'
+
+// Validate environment configuration on startup
+logEnvironmentStatus();
 
 // Create a client
 const queryClient = new QueryClient({
