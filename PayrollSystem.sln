@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayrollServer", "PayrollServer\PayrollServer.csproj", "{F41A2184-9EF4-4961-879A-DCF141FF4D75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayrollServer.API", "PayrollServer\PayrollServer.API.csproj", "{F41A2184-9EF4-4961-879A-DCF141FF4D75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayrollServer.Domain", "PayrollServer.Domain\PayrollServer.Domain.csproj", "{6746CE34-7579-4B3E-A620-F3F1FBC4CC6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayrollServer.Domain", "PayrollServer.Domain\PayrollServer.Domain.csproj", "{6746CE34-7579-4B3E-A620-F3F1FBC4CC6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayrollServer.Application", "PayrollServer.Application\PayrollServer.Application.csproj", "{21806B6D-683F-4CF5-BC32-BFABD680CD65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayrollServer.Application", "PayrollServer.Application\PayrollServer.Application.csproj", "{21806B6D-683F-4CF5-BC32-BFABD680CD65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayrollServer.Infrastructure", "PayrollServer.Infrastructure\PayrollServer.Infrastructure.csproj", "{072729A8-F353-451F-8019-9996E910C832}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayrollServer.Infrastructure", "PayrollServer.Infrastructure\PayrollServer.Infrastructure.csproj", "{072729A8-F353-451F-8019-9996E910C832}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayrollServer.Common", "PayrollServer.Common\PayrollServer.Common.csproj", "{A57EF1ED-D3E9-475A-9012-04A79EFDCF45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayrollServer.Common", "PayrollServer.Common\PayrollServer.Common.csproj", "{A57EF1ED-D3E9-475A-9012-04A79EFDCF45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
