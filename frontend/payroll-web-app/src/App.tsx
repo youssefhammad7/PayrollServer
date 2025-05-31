@@ -25,6 +25,10 @@ import { AbsenceThresholdList } from './pages/AbsenceThresholdList';
 import { AbsenceThresholdDetail } from './pages/AbsenceThresholdDetail';
 import { AbsenceThresholdForm } from './components/forms/AbsenceThresholdForm';
 import { PayrollCalculation } from './pages/PayrollCalculation';
+import { SalaryRecordList } from './pages/SalaryRecordList';
+import { SalaryRecordForm } from './pages/SalaryRecordForm';
+import { SalaryRecordDetail } from './pages/SalaryRecordDetail';
+import { ComingSoon } from './components/ComingSoon';
 
 // Debug component to help identify issues
 const DebugApp = () => {
@@ -218,7 +222,31 @@ function App() {
                   path="salary-records"
                   element={
                     <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
-                      <div>Salary Records (Coming Soon)</div>
+                      <SalaryRecordList />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="salary-records/create"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
+                      <SalaryRecordForm />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="salary-records/:id"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
+                      <SalaryRecordDetail />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="salary-records/:id/edit"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
+                      <SalaryRecordForm />
                     </ProtectedRoute>
                   }
                 />
@@ -226,7 +254,31 @@ function App() {
                   path="absence-records"
                   element={
                     <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
-                      <div>Absence Records (Coming Soon)</div>
+                      <ComingSoon message="Absence Records coming soon!" />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="absence-records/create"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
+                      <ComingSoon message="Create Absence Record coming soon!" />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="absence-records/:id"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
+                      <ComingSoon message="Absence Record Details coming soon!" />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="absence-records/:id/edit"
+                  element={
+                    <ProtectedRoute requiredRoles={['Admin', 'HR Clerk']}>
+                      <ComingSoon message="Edit Absence Record coming soon!" />
                     </ProtectedRoute>
                   }
                 />
