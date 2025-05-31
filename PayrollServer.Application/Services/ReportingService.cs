@@ -12,6 +12,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PayrollServer.Application.Exceptions;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
+using iText.Kernel.Colors;
+using iText.Layout.Borders;
+using System.Reflection;
 
 namespace PayrollServer.Application.Services
 {
@@ -544,10 +552,145 @@ namespace PayrollServer.Application.Services
 
         public async Task<byte[]> ExportToPdfAsync<T>(IEnumerable<T> data, string reportTitle)
         {
-            // In a real implementation, this would use a PDF library like iTextSharp or DinkToPdf
-            // For this demo, we'll return a message saying to use CSV export instead
-            var message = $"PDF export not implemented yet. Please use CSV export instead.\n\nReport: {reportTitle}\nGenerated: {DateTime.UtcNow}";
-            return Encoding.UTF8.GetBytes(message);
+            try
+            {
+                using var memoryStream = new MemoryStream();
+                var writer = new PdfWriter(memoryStream);
+                var pdf = new PdfDocument(writer);
+                var document = new Document(pdf);
+
+                // Add title
+                document.Add(new Paragraph(reportTitle)
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    .SetFontSize(18)
+                    .SetBold()
+                    .SetMarginBottom(20));
+
+                // Add generation timestamp
+                document.Add(new Paragraph($"Generated on: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC")
+                    .SetTextAlignment(TextAlignment.RIGHT)
+                    .SetFontSize(10)
+                    .SetItalic()
+                    .SetMarginBottom(20));
+
+                var dataList = data.ToList();
+                if (!dataList.Any())
+                {
+                    document.Add(new Paragraph("No data available for this report.")
+                        .SetTextAlignment(TextAlignment.CENTER)
+                        .SetFontSize(12)
+                        .SetMarginTop(50));
+                }
+                else
+                {
+                    // Get properties for table headers
+                    var properties = typeof(T).GetProperties()
+                        .Where(p => p.CanRead && 
+                               (p.PropertyType.IsPrimitive || 
+                                p.PropertyType == typeof(string) || 
+                                p.PropertyType == typeof(decimal) || 
+                                p.PropertyType == typeof(DateTime) || 
+                                p.PropertyType == typeof(DateTime?) ||
+                                Nullable.GetUnderlyingType(p.PropertyType)?.IsPrimitive == true))
+                        .ToArray();
+
+                    // Create table
+                    var table = new Table(properties.Length, true);
+                    table.SetWidth(UnitValue.CreatePercentValue(100));
+
+                    // Add headers
+                    foreach (var property in properties)
+                    {
+                        table.AddHeaderCell(new Cell()
+                            .Add(new Paragraph(FormatPropertyName(property.Name)))
+                            .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
+                            .SetBold()
+                            .SetTextAlignment(TextAlignment.CENTER)
+                            .SetBorder(new SolidBorder(1)));
+                    }
+
+                    // Add data rows
+                    foreach (var item in dataList)
+                    {
+                        foreach (var property in properties)
+                        {
+                            var value = property.GetValue(item);
+                            var cellText = FormatCellValue(value);
+                            
+                            var cell = new Cell()
+                                .Add(new Paragraph(cellText))
+                                .SetBorder(new SolidBorder(0.5f))
+                                .SetPadding(5);
+
+                            // Right-align numeric values
+                            if (IsNumericProperty(property))
+                            {
+                                cell.SetTextAlignment(TextAlignment.RIGHT);
+                            }
+                            
+                            table.AddCell(cell);
+                        }
+                    }
+
+                    document.Add(table);
+                }
+
+                // Add footer
+                document.Add(new Paragraph($"Total records: {dataList.Count}")
+                    .SetTextAlignment(TextAlignment.LEFT)
+                    .SetFontSize(10)
+                    .SetMarginTop(20));
+
+                document.Close();
+                return memoryStream.ToArray();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating PDF for report: {ReportTitle}", reportTitle);
+                throw new InvalidOperationException($"Failed to generate PDF report: {ex.Message}", ex);
+            }
+        }
+
+        private string FormatPropertyName(string propertyName)
+        {
+            // Convert PascalCase to readable format
+            var result = string.Concat(propertyName.Select((x, i) => i > 0 && char.IsUpper(x) ? " " + x : x.ToString()));
+            return result;
+        }
+
+        private string FormatCellValue(object? value)
+        {
+            if (value == null)
+                return string.Empty;
+
+            // Handle different types with explicit type checking
+            if (value is DateTime dateTime)
+                return dateTime.ToString("yyyy-MM-dd");
+            
+            if (value is decimal decimalValue)
+                return decimalValue.ToString("N2");
+                
+            if (value is double doubleValue)
+                return doubleValue.ToString("N2");
+                
+            if (value is float floatValue)
+                return floatValue.ToString("N2");
+                
+            if (value is bool boolValue)
+                return boolValue ? "Yes" : "No";
+                
+            return value.ToString() ?? string.Empty;
+        }
+
+        private bool IsNumericProperty(PropertyInfo property)
+        {
+            var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+            return type == typeof(decimal) || 
+                   type == typeof(double) || 
+                   type == typeof(float) || 
+                   type == typeof(int) || 
+                   type == typeof(long) || 
+                   type == typeof(short);
         }
     }
 } 

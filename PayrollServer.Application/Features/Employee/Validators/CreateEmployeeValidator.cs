@@ -37,7 +37,7 @@ namespace PayrollServer.Application.Features.Employee.Validators
                 .EmailAddress().WithMessage("Invalid email format")
                 .MaximumLength(100).WithMessage("Email cannot exceed 100 characters");
 
-            RuleFor(e => e.HiringDate)
+            RuleFor(e => e.HireDate)
                 .NotEmpty().WithMessage("Hiring date is required")
                 .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Hiring date cannot be in the future");
 

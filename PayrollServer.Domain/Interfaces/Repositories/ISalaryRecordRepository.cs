@@ -14,5 +14,7 @@ namespace PayrollServer.Domain.Interfaces.Repositories
         Task<SalaryRecord> GetMostRecentSalaryAsync(int employeeId, DateTime asOfDate);
         
         Task<bool> HasOverlappingEffectiveDateAsync(int employeeId, DateTime effectiveDate, int? excludeId = null);
+        
+        Task<IEnumerable<SalaryRecord>> GetRecentSalaryRecordsWithEmployeeAsync(int count);
     }
 } 

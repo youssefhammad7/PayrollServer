@@ -54,5 +54,14 @@ namespace PayrollServer.Infrastructure.Repositories
                 .ThenBy(a => a.Employee.FirstName)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<AbsenceRecord>> GetRecentAbsencesWithEmployeeAsync(int count)
+        {
+            return await _context.AbsenceRecords
+                .Include(a => a.Employee)
+                .OrderByDescending(a => a.CreatedAt)
+                .Take(count)
+                .ToListAsync();
+        }
     }
 } 

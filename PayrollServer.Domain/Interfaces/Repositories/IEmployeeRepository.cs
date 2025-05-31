@@ -29,5 +29,11 @@ namespace PayrollServer.Domain.Interfaces.Repositories
         Task<IEnumerable<Employee>> GetAllActiveEmployeesAsync();
         
         Task<bool> IsEmployeeNumberUniqueAsync(string employeeNumber, int? excludeId = null);
+        
+        Task<IEnumerable<Employee>> GetRecentEmployeesWithDetailsAsync(int count);
+        
+        Task<int> GetEmployeeCountByDepartmentAsync(int departmentId);
+        
+        Task<int> GetEmployeeCountByJobGradeAsync(int jobGradeId);
     }
 } 

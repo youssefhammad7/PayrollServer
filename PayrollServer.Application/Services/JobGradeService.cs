@@ -39,13 +39,28 @@ namespace PayrollServer.Application.Services
         public async Task<IEnumerable<JobGradeDto>> GetAllJobGradesAsync()
         {
             var jobGrades = await _unitOfWork.JobGrades.GetAllAsync();
-            return _mapper.Map<IEnumerable<JobGradeDto>>(jobGrades);
+            var jobGradeDtos = _mapper.Map<IEnumerable<JobGradeDto>>(jobGrades).ToList();
+            
+            // Manually calculate and set employee count for each job grade
+            foreach (var jobGradeDto in jobGradeDtos)
+            {
+                var employeeCount = await _unitOfWork.Employees.GetEmployeeCountByJobGradeAsync(jobGradeDto.Id);
+                jobGradeDto.EmployeeCount = employeeCount;
+            }
+            
+            return jobGradeDtos;
         }
 
         public async Task<JobGradeDto> GetJobGradeByIdAsync(int id)
         {
             var jobGrade = await _unitOfWork.JobGrades.GetByIdAsync(id);
-            return _mapper.Map<JobGradeDto>(jobGrade);
+            var jobGradeDto = _mapper.Map<JobGradeDto>(jobGrade);
+            
+            // Manually calculate and set employee count
+            var employeeCount = await _unitOfWork.Employees.GetEmployeeCountByJobGradeAsync(id);
+            jobGradeDto.EmployeeCount = employeeCount;
+            
+            return jobGradeDto;
         }
 
         public async Task<JobGradeDto> CreateJobGradeAsync(CreateJobGradeRequest request)

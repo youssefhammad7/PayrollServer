@@ -13,5 +13,7 @@ namespace PayrollServer.Domain.Interfaces.Repositories
         Task<bool> IsDuplicateMonthAsync(int employeeId, int year, int month, int? excludeId = null);
         
         Task<IEnumerable<AbsenceRecord>> GetAbsenceRecordsByYearMonthAsync(int year, int month);
+        
+        Task<IEnumerable<AbsenceRecord>> GetRecentAbsencesWithEmployeeAsync(int count);
     }
 } 

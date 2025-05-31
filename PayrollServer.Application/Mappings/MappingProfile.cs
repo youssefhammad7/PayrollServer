@@ -36,7 +36,7 @@ namespace PayrollServer.Application.Mappings
 
             // Department mappings
             CreateMap<Department, DepartmentDto>()
-                .ForMember(dest => dest.EmployeeCount, opt => opt.MapFrom(src => src.Employees.Count));
+                .ForMember(dest => dest.EmployeeCount, opt => opt.Ignore());
                 
             CreateMap<CreateDepartmentRequest, Department>();
             CreateMap<UpdateDepartmentRequest, Department>();
@@ -47,13 +47,14 @@ namespace PayrollServer.Application.Mappings
                 
             // JobGrade mappings
             CreateMap<JobGrade, JobGradeDto>()
-                .ForMember(dest => dest.EmployeeCount, opt => opt.MapFrom(src => src.Employees.Count));
+                .ForMember(dest => dest.EmployeeCount, opt => opt.Ignore());
                 
             CreateMap<CreateJobGradeRequest, JobGrade>();
             CreateMap<UpdateJobGradeRequest, JobGrade>();
             
             // Employee mappings
             CreateMap<Employee, EmployeeDto>()
+                .ForMember(dest => dest.EmployeeNumber, opt => opt.MapFrom(src => src.EmployeeNumber))
                 .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Department.Name))
                 .ForMember(dest => dest.DepartmentIncentivePercentage, opt => opt.MapFrom(src => src.Department.IncentivePercentage))
                 .ForMember(dest => dest.JobGradeName, opt => opt.MapFrom(src => src.JobGrade.Name))
@@ -68,8 +69,11 @@ namespace PayrollServer.Application.Mappings
                     ? src.SalaryRecords.OrderByDescending(s => s.EffectiveDate).FirstOrDefault().EffectiveDate
                     : (System.DateTime?)null));
                 
-            CreateMap<CreateEmployeeRequest, Employee>();
-            CreateMap<UpdateEmployeeRequest, Employee>();
+            CreateMap<CreateEmployeeRequest, Employee>()
+                .ForMember(dest => dest.EmployeeNumber, opt => opt.MapFrom(src => src.EmployeeId))
+                .ForMember(dest => dest.HiringDate, opt => opt.MapFrom(src => src.HireDate));
+            CreateMap<UpdateEmployeeRequest, Employee>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.EmploymentStatus));
             
             // SalaryRecord mappings
             CreateMap<SalaryRecord, SalaryRecordDto>()

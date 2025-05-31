@@ -42,13 +42,28 @@ namespace PayrollServer.Application.Services
         public async Task<IEnumerable<DepartmentDto>> GetAllDepartmentsAsync()
         {
             var departments = await _unitOfWork.Departments.GetAllAsync();
-            return _mapper.Map<IEnumerable<DepartmentDto>>(departments);
+            var departmentDtos = _mapper.Map<IEnumerable<DepartmentDto>>(departments).ToList();
+            
+            // Manually calculate and set employee count for each department
+            foreach (var departmentDto in departmentDtos)
+            {
+                var employeeCount = await _unitOfWork.Employees.GetEmployeeCountByDepartmentAsync(departmentDto.Id);
+                departmentDto.EmployeeCount = employeeCount;
+            }
+            
+            return departmentDtos;
         }
 
         public async Task<DepartmentDto> GetDepartmentByIdAsync(int id)
         {
             var department = await _unitOfWork.Departments.GetByIdAsync(id);
-            return _mapper.Map<DepartmentDto>(department);
+            var departmentDto = _mapper.Map<DepartmentDto>(department);
+            
+            // Manually calculate and set employee count
+            var employeeCount = await _unitOfWork.Employees.GetEmployeeCountByDepartmentAsync(id);
+            departmentDto.EmployeeCount = employeeCount;
+            
+            return departmentDto;
         }
 
         public async Task<DepartmentDto> CreateDepartmentAsync(CreateDepartmentRequest request)

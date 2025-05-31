@@ -54,5 +54,14 @@ namespace PayrollServer.Infrastructure.Repositories
 
             return await query.AnyAsync();
         }
+
+        public async Task<IEnumerable<SalaryRecord>> GetRecentSalaryRecordsWithEmployeeAsync(int count)
+        {
+            return await _context.SalaryRecords
+                .Include(s => s.Employee)
+                .OrderByDescending(s => s.CreatedAt)
+                .Take(count)
+                .ToListAsync();
+        }
     }
 } 
