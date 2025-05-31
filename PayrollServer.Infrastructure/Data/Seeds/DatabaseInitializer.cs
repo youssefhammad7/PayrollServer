@@ -31,9 +31,43 @@ namespace PayrollServer.Infrastructure.Data.Seeds
                 await DefaultAdminSeeder.SeedDefaultAdminAsync(serviceProvider);
                 logger.LogInformation("Default admin user seeded successfully.");
 
-                // Seed job grades
+                // Seed job grades (prerequisite for employees)
                 await JobGradeSeeder.SeedJobGradesAsync(serviceProvider);
                 logger.LogInformation("Job grades seeded successfully.");
+
+                // Seed departments (prerequisite for employees)
+                await DepartmentSeeder.SeedDepartmentsAsync(serviceProvider);
+                logger.LogInformation("Departments seeded successfully.");
+
+                // Seed service brackets (used for payroll calculations)
+                await ServiceBracketSeeder.SeedServiceBracketsAsync(serviceProvider);
+                logger.LogInformation("Service brackets seeded successfully.");
+
+                // Seed absence thresholds (used for attendance adjustments)
+                await AbsenceThresholdSeeder.SeedAbsenceThresholdsAsync(serviceProvider);
+                logger.LogInformation("Absence thresholds seeded successfully.");
+
+                // Seed employees (requires departments and job grades)
+                await EmployeeSeeder.SeedEmployeesAsync(serviceProvider);
+                logger.LogInformation("Employees seeded successfully.");
+
+                // Seed salary records (requires employees)
+                await SalaryRecordSeeder.SeedSalaryRecordsAsync(serviceProvider);
+                logger.LogInformation("Salary records seeded successfully.");
+
+                // Seed absence records (requires employees and absence thresholds)
+                await AbsenceRecordSeeder.SeedAbsenceRecordsAsync(serviceProvider);
+                logger.LogInformation("Absence records seeded successfully.");
+
+                // Seed incentives (requires employees)
+                await IncentiveSeeder.SeedIncentivesAsync(serviceProvider);
+                logger.LogInformation("Incentives seeded successfully.");
+
+                // Seed payroll snapshots (requires all above data)
+                await PayrollSnapshotSeeder.SeedPayrollSnapshotsAsync(serviceProvider);
+                logger.LogInformation("Payroll snapshots seeded successfully.");
+
+                logger.LogInformation("Database initialization completed successfully with comprehensive test data.");
             }
             catch (Exception ex)
             {

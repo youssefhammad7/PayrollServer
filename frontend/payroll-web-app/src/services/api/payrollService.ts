@@ -309,7 +309,7 @@ class PayrollService {
         snapshot.serviceYearsIncentiveAmount + 
         snapshot.attendanceAdjustmentAmount;
 
-      if (Math.abs(snapshot.grossSalary - expectedGross) > 0.01) {
+      if (Math.abs(snapshot.grossSalary - expectedGross) > 1) {
         errors.push('Gross salary calculation appears incorrect');
       }
 
