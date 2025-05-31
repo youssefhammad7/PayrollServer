@@ -41,6 +41,8 @@ import { useAuth } from '../../contexts/AuthContext';
 
 interface SidebarProps {
   open: boolean;
+  collapsed?: boolean;
+  isMobile?: boolean;
   onClose: () => void;
   drawerWidth: number;
 }
@@ -61,7 +63,13 @@ interface MenuItem {
   subItems?: MenuItem[];
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, drawerWidth }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ 
+  open, 
+  collapsed = false,
+  isMobile = false,
+  onClose, 
+  drawerWidth 
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAdmin, isHRClerk } = useAuth();
@@ -251,10 +259,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, drawerWidth }) 
             selected={isActive && !hasSubItems}
             onClick={() => {
               if (hasSubItems) {
-                handleSectionToggle(item.text);
+                if (!collapsed) {
+                  handleSectionToggle(item.text);
+                }
               } else {
                 navigate(item.path);
-                onClose();
+                if (isMobile) {
+                  onClose();
+                }
               }
             }}
             sx={{
@@ -265,28 +277,35 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, drawerWidth }) 
                   bgcolor: 'primary.main',
                 },
               },
+              justifyContent: collapsed ? 'center' : 'flex-start',
+              px: collapsed ? 1 : 2,
             }}
           >
             <ListItemIcon
               sx={{
                 color: isActive && !hasSubItems ? 'inherit' : 'action.active',
-                minWidth: 40,
+                minWidth: collapsed ? 'auto' : 40,
+                justifyContent: 'center',
               }}
             >
               {item.icon}
             </ListItemIcon>
-            <ListItemText 
-              primary={item.text}
-              primaryTypographyProps={{
-                fontSize: isSubItem ? '0.875rem' : '1rem',
-                fontWeight: isActive && !hasSubItems ? 'bold' : 'normal',
-              }}
-            />
-            {hasSubItems && (isExpanded ? <ExpandLess /> : <ExpandMore />)}
+            {!collapsed && (
+              <>
+                <ListItemText 
+                  primary={item.text}
+                  primaryTypographyProps={{
+                    fontSize: isSubItem ? '0.875rem' : '1rem',
+                    fontWeight: isActive && !hasSubItems ? 'bold' : 'normal',
+                  }}
+                />
+                {hasSubItems && (isExpanded ? <ExpandLess /> : <ExpandMore />)}
+              </>
+            )}
           </ListItemButton>
         </ListItem>
 
-        {hasSubItems && (
+        {hasSubItems && !collapsed && (
           <Collapse in={isExpanded} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               {item.subItems?.map(subItem => renderMenuItem(subItem, true))}
@@ -300,47 +319,66 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, drawerWidth }) 
   const drawerContent = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Avatar sx={{ bgcolor: 'primary.main' }}>💼</Avatar>
-        <Box sx={{ flex: 1 }}>
-          <Typography variant="h6" noWrap>
-            Payroll System
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            v1.0.0
-          </Typography>
-        </Box>
-      </Box>
-
-      <Divider />
-
-      {/* User Info */}
-      <Box sx={{ p: 2, bgcolor: 'grey.50' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-          <Avatar sx={{ width: 32, height: 32 }}>
-            {user?.firstName?.charAt(0)}
-          </Avatar>
-          <Box>
-            <Typography variant="body2" fontWeight="bold">
-              {user?.firstName} {user?.lastName}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {user?.email}
-            </Typography>
+      {!collapsed && (
+        <>
+          <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ bgcolor: 'primary.main' }}>💼</Avatar>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="h6" noWrap>
+                Payroll System
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                v1.0.0
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-        <Chip 
-          label={user?.roles[0]} 
-          size="small" 
-          color="primary" 
-          variant="outlined"
-        />
-      </Box>
 
-      <Divider />
+          <Divider />
+
+          {/* User Info */}
+          <Box sx={{ p: 2, bgcolor: 'grey.50' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+              <Avatar sx={{ width: 32, height: 32 }}>
+                {user?.firstName?.charAt(0)}
+              </Avatar>
+              <Box>
+                <Typography variant="body2" fontWeight="bold">
+                  {user?.firstName} {user?.lastName}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {user?.email}
+                </Typography>
+              </Box>
+            </Box>
+            <Chip 
+              label={user?.roles[0]} 
+              size="small" 
+              color="primary" 
+              variant="outlined"
+            />
+          </Box>
+
+          <Divider />
+        </>
+      )}
+
+      {collapsed && (
+        <>
+          <Box sx={{ p: 1, display: 'flex', justifyContent: 'center' }}>
+            <Avatar sx={{ bgcolor: 'primary.main', width: 40, height: 40 }}>💼</Avatar>
+          </Box>
+          <Divider />
+          <Box sx={{ p: 1, display: 'flex', justifyContent: 'center' }}>
+            <Avatar sx={{ width: 32, height: 32 }}>
+              {user?.firstName?.charAt(0)}
+            </Avatar>
+          </Box>
+          <Divider />
+        </>
+      )}
 
       {/* Navigation Menu */}
-      <Box sx={{ flex: 1, overflow: 'auto' }}>
+      <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
         {menuSections.map(section => {
           if (!hasAccess(section)) return null;
 
@@ -351,31 +389,33 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, drawerWidth }) 
 
           return (
             <React.Fragment key={section.title}>
-              <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() => handleSectionToggle(section.title)}
-                  sx={{ py: 1 }}
-                >
-                  <ListItemText
-                    primary={section.title}
-                    primaryTypographyProps={{
-                      fontSize: '0.75rem',
-                      fontWeight: 'bold',
-                      textTransform: 'uppercase',
-                      color: 'text.secondary',
-                    }}
-                  />
-                  {isExpanded ? <ExpandLess /> : <ExpandMore />}
-                </ListItemButton>
-              </ListItem>
+              {!collapsed && (
+                <ListItem disablePadding>
+                  <ListItemButton
+                    onClick={() => handleSectionToggle(section.title)}
+                    sx={{ py: 1 }}
+                  >
+                    <ListItemText
+                      primary={section.title}
+                      primaryTypographyProps={{
+                        fontSize: '0.75rem',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                        color: 'text.secondary',
+                      }}
+                    />
+                    {isExpanded ? <ExpandLess /> : <ExpandMore />}
+                  </ListItemButton>
+                </ListItem>
+              )}
 
-              <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+              <Collapse in={!collapsed ? isExpanded : true} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                   {accessibleItems.map(item => renderMenuItem(item))}
                 </List>
               </Collapse>
 
-              <Divider sx={{ my: 1 }} />
+              {!collapsed && <Divider sx={{ my: 1 }} />}
             </React.Fragment>
           );
         })}
@@ -385,11 +425,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, drawerWidth }) 
       <Divider />
       <List>
         <ListItem disablePadding>
-          <ListItemButton onClick={() => navigate('/settings')}>
-            <ListItemIcon>
+          <ListItemButton 
+            onClick={() => {
+              navigate('/settings');
+              if (isMobile) {
+                onClose();
+              }
+            }}
+            sx={{
+              justifyContent: collapsed ? 'center' : 'flex-start',
+              px: collapsed ? 1 : 2,
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: collapsed ? 'auto' : 40, justifyContent: 'center' }}>
               <Settings />
             </ListItemIcon>
-            <ListItemText primary="Settings" />
+            {!collapsed && <ListItemText primary="Settings" />}
           </ListItemButton>
         </ListItem>
       </List>
@@ -398,15 +449,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, drawerWidth }) 
 
   return (
     <Drawer
-      variant="permanent"
+      variant={isMobile ? "temporary" : "permanent"}
       anchor="left"
       open={open}
+      onClose={onClose}
+      ModalProps={{
+        keepMounted: true, // Better open performance on mobile.
+      }}
       sx={{
         width: drawerWidth,
         flexShrink: 0,
         '& .MuiDrawer-paper': {
           width: drawerWidth,
           boxSizing: 'border-box',
+          borderRight: '1px solid',
+          borderColor: 'divider',
+          transition: 'width 0.3s ease',
         },
       }}
     >

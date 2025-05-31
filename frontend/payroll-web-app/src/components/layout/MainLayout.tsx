@@ -12,9 +12,11 @@ import {
   Divider,
   useMediaQuery,
   useTheme,
+  Tooltip,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
+  MenuOpen as MenuOpenIcon,
   Notifications,
   Logout,
   Settings as SettingsIcon,
@@ -25,6 +27,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Sidebar } from './Sidebar';
 
 const DRAWER_WIDTH = 280;
+const DRAWER_WIDTH_COLLAPSED = 80;
 
 export const MainLayout: React.FC = () => {
   const theme = useTheme();
@@ -33,10 +36,17 @@ export const MainLayout: React.FC = () => {
   const { user, logout } = useAuth();
   
   const [sidebarOpen, setSidebarOpen] = React.useState(!isMobile);
+  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
+  const currentDrawerWidth = sidebarCollapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH;
+
   const handleDrawerToggle = () => {
-    setSidebarOpen(!sidebarOpen);
+    if (isMobile) {
+      setSidebarOpen(!sidebarOpen);
+    } else {
+      setSidebarCollapsed(!sidebarCollapsed);
+    }
   };
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -63,39 +73,62 @@ export const MainLayout: React.FC = () => {
     navigate('/settings');
   };
 
+  // Close sidebar on mobile when route changes
+  React.useEffect(() => {
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  }, [navigate, isMobile]);
+
   return (
-    <Box sx={{ display: 'flex', height: '100vh' }}>
+    <Box sx={{ 
+      display: 'flex', 
+      height: '100vh',
+      width: '100vw',
+      overflow: 'hidden'
+    }}>
       {/* App Bar */}
       <AppBar
         position="fixed"
         sx={{
-          width: { md: sidebarOpen ? `calc(100% - ${DRAWER_WIDTH}px)` : '100%' },
-          ml: { md: sidebarOpen ? `${DRAWER_WIDTH}px` : 0 },
+          width: { 
+            xs: '100%',
+            md: sidebarOpen ? `calc(100% - ${currentDrawerWidth}px)` : '100%' 
+          },
+          ml: { 
+            xs: 0,
+            md: sidebarOpen ? `${currentDrawerWidth}px` : 0 
+          },
           transition: theme.transitions.create(['width', 'margin'], {
             easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
+            duration: theme.transitions.duration.enteringScreen,
           }),
+          zIndex: theme.zIndex.drawer + 1,
         }}
       >
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="toggle drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
+          <Tooltip title={sidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}>
+            <IconButton
+              color="inherit"
+              aria-label="toggle drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2 }}
+            >
+              {sidebarCollapsed ? <MenuIcon /> : <MenuOpenIcon />}
+            </IconButton>
+          </Tooltip>
 
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Payroll Management System
           </Typography>
 
           {/* Notifications */}
-          <IconButton color="inherit">
-            <Notifications />
-          </IconButton>
+          <Tooltip title="Notifications">
+            <IconButton color="inherit">
+              <Notifications />
+            </IconButton>
+          </Tooltip>
 
           {/* Profile Menu */}
           <Button
@@ -145,21 +178,24 @@ export const MainLayout: React.FC = () => {
       <Box
         component="nav"
         sx={{
-          width: { md: sidebarOpen ? DRAWER_WIDTH : 0 },
-          flexShrink: { md: 0 },
+          width: { 
+            xs: 0,
+            md: sidebarOpen ? currentDrawerWidth : 0 
+          },
+          flexShrink: 0,
           transition: theme.transitions.create('width', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
           }),
         }}
       >
-        {sidebarOpen && (
-          <Sidebar
-            open={sidebarOpen}
-            onClose={() => setSidebarOpen(false)}
-            drawerWidth={DRAWER_WIDTH}
-          />
-        )}
+        <Sidebar
+          open={sidebarOpen}
+          collapsed={sidebarCollapsed && !isMobile}
+          onClose={() => setSidebarOpen(false)}
+          drawerWidth={currentDrawerWidth}
+          isMobile={isMobile}
+        />
       </Box>
 
       {/* Main Content */}
@@ -169,14 +205,22 @@ export const MainLayout: React.FC = () => {
           flexGrow: 1,
           bgcolor: 'background.default',
           overflow: 'auto',
-          transition: theme.transitions.create('margin', {
+          width: {
+            xs: '100%',
+            md: sidebarOpen ? `calc(100% - ${currentDrawerWidth}px)` : '100%'
+          },
+          transition: theme.transitions.create(['width', 'margin'], {
             easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
+            duration: theme.transitions.duration.enteringScreen,
           }),
         }}
       >
         <Toolbar /> {/* Spacer for app bar */}
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ 
+          p: { xs: 2, sm: 3 },
+          width: '100%',
+          minHeight: 'calc(100vh - 64px)',
+        }}>
           <Outlet />
         </Box>
       </Box>
