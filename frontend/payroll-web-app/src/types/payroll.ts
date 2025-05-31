@@ -156,4 +156,114 @@ export interface PayrollSummary {
   totalGrossSalary: number;
   averageGrossSalary: number;
   processingDate?: string;
+}
+
+// Payroll Summary for review interface
+export interface PayrollReviewSummary {
+  year: number;
+  month: number;
+  monthName: string;
+  totalEmployees: number;
+  totalBaseSalary: number;
+  totalDepartmentIncentives: number;
+  totalServiceIncentives: number;
+  totalAttendanceAdjustments: number;
+  totalGrossSalary: number;
+  averageGrossSalary: number;
+  processingDate?: string;
+  generatedAt?: string;
+  // Department breakdown
+  departmentBreakdown: DepartmentPayrollSummary[];
+  // Status tracking
+  hasAnyErrors: boolean;
+  missingEmployees: number;
+  processedEmployees: number;
+}
+
+// Department-wise payroll summary
+export interface DepartmentPayrollSummary {
+  departmentId: number;
+  departmentName: string;
+  employeeCount: number;
+  totalBaseSalary: number;
+  totalIncentives: number;
+  totalAdjustments: number;
+  totalGrossSalary: number;
+  averageGrossSalary: number;
+  hasErrors: boolean;
+}
+
+// Payroll Review Status
+export type PayrollStatus = 'draft' | 'calculated' | 'under_review' | 'approved' | 'rejected';
+
+// Payroll Review Comments/Actions
+export interface PayrollReviewAction {
+  id: string;
+  employeeId?: number;
+  employeeName?: string;
+  action: 'approve' | 'reject' | 'request_change' | 'comment';
+  comment: string;
+  reviewedBy: string;
+  reviewedAt: string;
+  resolved: boolean;
+}
+
+// Payroll Batch for tracking approval workflow
+export interface PayrollBatch {
+  id: string;
+  year: number;
+  month: number;
+  monthName: string;
+  status: PayrollStatus;
+  totalEmployees: number;
+  processedEmployees: number;
+  totalGrossSalary: number;
+  createdBy: string;
+  createdAt: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  comments?: string;
+  actions: PayrollReviewAction[];
+}
+
+// Employee payroll validation result
+export interface PayrollValidationResult {
+  employeeId: number;
+  employeeName: string;
+  isValid: boolean;
+  errors: string[];
+  warnings: string[];
+  calculationBreakdown: {
+    baseSalary: number;
+    departmentIncentive: number;
+    serviceIncentive: number;
+    attendanceAdjustment: number;
+    grossSalary: number;
+  };
+}
+
+// Payroll Review Request
+export interface PayrollReviewRequest {
+  year: number;
+  month: number;
+  action: 'approve' | 'reject' | 'request_changes';
+  comment?: string;
+  employeeIds?: number[]; // For partial approval
+}
+
+// Payroll comparison for changes detection
+export interface PayrollComparison {
+  employeeId: number;
+  employeeName: string;
+  current: PayrollSnapshot;
+  previous?: PayrollSnapshot;
+  hasChanges: boolean;
+  changes: {
+    field: string;
+    oldValue: any;
+    newValue: any;
+    changePercentage?: number;
+  }[];
 } 

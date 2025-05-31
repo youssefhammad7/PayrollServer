@@ -109,6 +109,11 @@ export const PayrollCalculation: React.FC = () => {
     }));
   };
 
+  // Get month name helper
+  const getMonthName = (month: number): string => {
+    return new Date(2000, month - 1, 1).toLocaleDateString('default', { month: 'long' });
+  };
+
   // Check for existing payroll when period changes
   useEffect(() => {
     checkExistingPayroll().then((result) => {
@@ -213,7 +218,7 @@ export const PayrollCalculation: React.FC = () => {
                   <Alert severity="warning" sx={{ mt: 2 }}>
                     <Typography variant="body2">
                       <strong>Warning:</strong> Payroll records already exist for{' '}
-                      {payrollService.getMonthName(selectedMonth)} {selectedYear}.
+                      {getMonthName(selectedMonth)} {selectedYear}.
                       Generating new payroll will overwrite existing records.
                     </Typography>
                   </Alert>
@@ -249,7 +254,7 @@ export const PayrollCalculation: React.FC = () => {
                   <Alert severity="info" sx={{ mb: 3 }}>
                     <Typography variant="body2">
                       Preview shows calculated gross pay for {previewData.length} employees for{' '}
-                      <strong>{payrollService.getMonthName(selectedMonth)} {selectedYear}</strong>.
+                      <strong>{getMonthName(selectedMonth)} {selectedYear}</strong>.
                       No data has been saved yet.
                     </Typography>
                   </Alert>
@@ -427,7 +432,7 @@ export const PayrollCalculation: React.FC = () => {
 
                   <Paper sx={{ p: 3, mb: 3 }}>
                     <Typography variant="h6" gutterBottom>
-                      Payroll Summary for {summary.monthName} {summary.year}
+                      Payroll Summary for {getMonthName(selectedMonth)} {selectedYear}
                     </Typography>
                     
                     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
@@ -506,7 +511,7 @@ export const PayrollCalculation: React.FC = () => {
                 <Alert severity="success" sx={{ mb: 3 }}>
                   <Typography variant="body1">
                     <strong>Success!</strong> Payroll has been successfully generated for{' '}
-                    {payrollService.getMonthName(selectedMonth)} {selectedYear}.
+                    {getMonthName(selectedMonth)} {selectedYear}.
                   </Typography>
                 </Alert>
                 
@@ -537,7 +542,7 @@ export const PayrollCalculation: React.FC = () => {
         <DialogTitle>Confirm Payroll Generation</DialogTitle>
         <DialogContent>
           <Typography>
-            Are you sure you want to generate payroll for <strong>{payrollService.getMonthName(selectedMonth)} {selectedYear}</strong>?
+            Are you sure you want to generate payroll for <strong>{getMonthName(selectedMonth)} {selectedYear}</strong>?
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             This will create permanent payroll records for {previewData.length} employees 
